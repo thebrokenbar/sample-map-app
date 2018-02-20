@@ -1,0 +1,59 @@
+ext {
+    //implementation & kapt
+    supportLibVer = '27.0.2'
+    boundControllerVer = '0.2'
+    architectureComponentsVer = '1.1.0'
+    timberVer = '4.6.0'
+    androidKtxVer = '0.1'
+    googleApiVer = '11.8.0'
+    crashlyticsVer = '2.9.0'
+    rxJavaVer = '2.1.9'
+    rxAndroidVer = '2.0.1'
+    rxKotlinVer = '2.2.0'
+    rxFirebaseDatabaseVer = '11.8.0.0'
+    googleMapsUtilsVer = "0.5"
+
+    //tests
+    jUnitVer = '4.12'
+    espressoVer = '3.0.1'
+    testRunnerVer = '1.0.1'
+    daggerVer = '2.14.1'
+
+    kaptDependencies = [
+            "android.arch.lifecycle:compiler:$architectureComponentsVer",
+            "com.google.dagger:dagger-compiler:$daggerVer"
+    ]
+
+    implementationDependencies = [
+            //android
+            "com.android.support:appcompat-v7:$supportLibVer",
+            "com.android.support:design:$supportLibVer",
+            "android.arch.lifecycle:extensions:$architectureComponentsVer",
+            "androidx.core:core-ktx:$androidKtxVer",
+            //google maps
+            "com.google.android.gms:play-services-maps:$googleApiVer",
+            "com.google.maps.android:android-maps-utils:$googleMapsUtilsVer",
+            //kotlin
+            "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlinVer",
+            //log
+            "com.jakewharton.timber:timber:$timberVer",
+            //dagger
+            "com.google.dagger:dagger:$daggerVer",
+            //firebase
+            "com.google.firebase:firebase-core:$googleApiVer",
+            //rxJava
+            "io.reactivex.rxjava2:rxjava:$rxJavaVer",
+            "io.reactivex.rxjava2:rxandroid:$rxAndroidVer",
+            "io.reactivex.rxjava2:rxkotlin:$rxKotlinVer"
+    ]
+
+    testImplementationDependencies = [
+            "junit:junit:$jUnitVer",
+            "android.arch.core:core-testing:$architectureComponentsVer"
+    ]
+
+    androidTestImplementationDependencies = [
+            "com.android.support.test.espresso:espresso-core:$espressoVer",
+            "com.android.support.test:runner:$testRunnerVer"
+    ]
+}

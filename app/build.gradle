@@ -4,13 +4,19 @@ apply plugin: 'kotlin-android'
 
 apply plugin: 'kotlin-android-extensions'
 
+apply plugin: 'kotlin-kapt'
+
+kapt {
+    generateStubs = true
+}
+
 android {
-    compileSdkVersion 26
+    compileSdkVersion 27
     defaultConfig {
         multiDexEnabled true
         applicationId "pl.brokenpipe.vozillatest"
         minSdkVersion 19
-        targetSdkVersion 26
+        targetSdkVersion 27
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -22,13 +28,38 @@ android {
         }
     }
 }
+ext {
+    //implementation & kapt
+    supportLibVer = '27.0.2'
+
+    architectureComponentsVer = '1.1.0'
+    androidKtxVer = '0.1'
+    dataBindingVer = '3.0.1'
+    googleApiVer = '11.8.0'
+    crashlyticsVer = '2.9.0'
+    rxJavaVer = '2.1.9'
+    rxAndroidVer = '2.0.1'
+    rxKotlinVer = '2.2.0'
+
+    //tests
+    jUnitVer = '4.12'
+    espressoVer = '3.0.1'
+    testRunnerVer = '1.0.1'
+    daggerVer = '2.14.1'
+
+}
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation"org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
-    implementation 'com.android.support:appcompat-v7:26.1.0'
-    implementation 'com.google.android.gms:play-services-maps:11.0.4'
-    testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'com.android.support.test:runner:0.5'
-    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
+    kapt kaptDependencies
+    implementation implementationDependencies
+    testImplementation testImplementationDependencies
+    androidTestImplementation androidTestImplementationDependencies
+
+    //crashlytics
+    implementation("com.crashlytics.sdk.android:crashlytics:$crashlyticsVer@aar") {
+        transitive = true
+    }
+
+    implementation project(':rest-client')
 }

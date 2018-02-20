@@ -2,25 +2,34 @@ package pl.brokenpipe.vozillatest
 
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
-import com.google.android.gms.maps.GoogleMap
-import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
+import pl.brokenpipe.vozillatest.di.component.ActivityComponent
+import pl.brokenpipe.vozillatest.di.module.MapsActivityModule
+import pl.brokenpipe.vozillatest.mapsearch.arch.MapView
+import javax.inject.Inject
 
-class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
+class MapsActivity : AppCompatActivity() {
 
-    private lateinit var mMap: GoogleMap
+    @Inject
+    lateinit var mapView: MapView
+
+    lateinit var activityComponent: ActivityComponent
+        private set
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_maps)
-        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
+
+        activityComponent = (application as VozillaApplication).appComponent
+                .plus(MapsActivityModule(this))
+
+        activityComponent.inject(this)
+
         val mapFragment = supportFragmentManager
                 .findFragmentById(R.id.map) as SupportMapFragment
-        mapFragment.getMapAsync(this)
+
+        mapFragment.getMapAsync(mapView)
     }
 
-    override fun onMapReady(googleMap: GoogleMap) {
-        mMap = googleMap
 
-    }
 }

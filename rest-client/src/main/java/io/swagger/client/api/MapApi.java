@@ -1,5 +1,7 @@
 package io.swagger.client.api;
 
+import io.reactivex.Maybe;
+import io.reactivex.Single;
 import io.swagger.client.CollectionFormats.*;
 
 import retrofit2.Call;
@@ -25,7 +27,7 @@ public interface MapApi {
    * @return Call&lt;Map&lt;String, String&gt;&gt;
    */
   @GET("map/countries")
-  Call<Map<String, String>> countryCodes();
+  Single<Map<String, String>> countryCodes();
 
 
   /**
@@ -34,7 +36,7 @@ public interface MapApi {
    * @return Call&lt;MapFilters&gt;
    */
   @GET("map/filters")
-  Call<MapFilters> filters();
+  Single<MapFilters> filters();
 
 
   /**
@@ -49,7 +51,7 @@ public interface MapApi {
    * @return Call&lt;Void&gt;
    */
   @GET("map")
-  Call<MapSearchResponse> findMapObjects(
+  Maybe<MapSearchResponse> findMapObjects(
     @retrofit2.http.Query("objectType") List<String> objectType, @retrofit2.http.Query("vehicleType") List<String> vehicleType, @retrofit2.http.Query("vehicleModel") List<String> vehicleModel, @retrofit2.http.Query("vehicleStatus") List<String> vehicleStatus, @retrofit2.http.Query("poiCategory") List<String> poiCategory, @retrofit2.http.Query("location") String location
   );
 
