@@ -1,69 +1,94 @@
 package pl.brokenpipe.vozillatest.mapsearch
 
+import android.view.View
+import android.widget.Toast
 import com.google.android.gms.maps.GoogleMap
-import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.PolygonOptions
-import com.google.maps.android.clustering.ClusterManager
-import com.google.maps.android.clustering.view.DefaultClusterRenderer
-import com.google.maps.android.ui.IconGenerator
+import io.reactivex.Single
+import io.reactivex.SingleObserver
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.Disposable
+import io.reactivex.rxkotlin.subscribeBy
+import io.reactivex.schedulers.Schedulers
+import kotlinx.android.synthetic.main.activity_maps.*
 import pl.brokenpipe.vozillatest.MapsActivity
-import pl.brokenpipe.vozillatest.R
 import pl.brokenpipe.vozillatest.di.module.MapViewModule
+import pl.brokenpipe.vozillatest.interactor.model.ClusterType
+import pl.brokenpipe.vozillatest.mapsearch.arch.MapSearchPresenter
 import pl.brokenpipe.vozillatest.mapsearch.arch.MapView
-import pl.brokenpipe.vozillatest.mapsearch.model.*
+import pl.brokenpipe.vozillatest.mapsearch.cluster.Cluster
+import pl.brokenpipe.vozillatest.mapsearch.cluster.ClusterOrchestrator
+import pl.brokenpipe.vozillatest.mapsearch.model.Marker
+import pl.brokenpipe.vozillatest.mapsearch.model.SearchFilter
+import pl.brokenpipe.vozillatest.mapsearch.model.Zone
+import timber.log.Timber
 import java.lang.ref.WeakReference
 import javax.inject.Inject
-import javax.inject.Named
 
 /**
  * Created by gwierzchanowski on 20.02.2018.
  */
-class GoogleMapView(mapsActivity: MapsActivity) : MapView, GoogleMap.OnCameraIdleListener {
+class GoogleMapView(mapsActivity: MapsActivity,
+                    private val presenter: MapSearchPresenter) : MapView {
 
     private val activityRef = WeakReference(mapsActivity)
 
     @Inject
-    lateinit var iconGenerator: IconGenerator
-
-    @Inject
-    lateinit var vehicleClusterManager: ClusterManager<VehicleMarker>
-
-    @Inject
-    lateinit var parkingClusterManager: ClusterManager<ParkingMarker>
-
-    @Inject
-    lateinit var vehicleClusterRenderer: DefaultClusterRenderer<VehicleMarker>
-
-    @Inject
-    lateinit var parkingClusterRenderer: DefaultClusterRenderer<ParkingMarker>
+    lateinit var clusterOrchestrator: ClusterOrchestrator
 
     private lateinit var googleMap: GoogleMap
 
     override fun onMapReady(googleMap: GoogleMap) {
         this.googleMap = googleMap
+        val activity = activityRef.get() ?: throw IllegalStateException("Context is lost")
 
-        activityRef.get()?.activityComponent
-                ?.plus(MapViewModule(activityRef, this.googleMap))
-                ?.inject(this)
+        activity.activityComponent
+                .plus(MapViewModule(activityRef, this.googleMap))
+                .inject(this)
 
-        vehicleClusterManager.renderer = vehicleClusterRenderer
-        parkingClusterManager.renderer = parkingClusterRenderer
+        configureClusters()
 
-        this.googleMap.setOnCameraIdleListener(this)
+        this.googleMap.setOnCameraIdleListener(clusterOrchestrator)
+    }
 
-        testItems().forEach{
-            addMarker(it)
+    fun refresh() {
+        presenter.getMarkers(getSearchFilter())
+                .doOnSuccess { addAllMarkers(it) }
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(loadingObserver())
+    }
+
+
+    private fun addAllMarkers(clusterMap: Map<Cluster, List<Marker>>) {
+        clusterMap.forEach { cluster ->
+            cluster.value.forEach {
+                addMarker(cluster.key, it)
+            }
         }
-        vehicleClusterManager.cluster()
-        parkingClusterManager.cluster()
     }
 
-    override fun onCameraIdle() {
-        vehicleClusterManager.onCameraIdle()
-        parkingClusterManager.onCameraIdle()
+    private fun configureClusters() {
+        presenter.getClusterConfigs()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnSuccess { clusterOrchestrator.initialize(it) }
+                .observeOn(Schedulers.io())
+                .flatMap { presenter.getMarkers(getSearchFilter()) }
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnSuccess { addAllMarkers(it) }
+                .subscribe(loadingObserver())
     }
 
-    override fun addZone(zone: Zone) {
+    private fun releaseLoadingState() {
+        activityRef.get()?.mapLoadingProgressBar?.visibility = View.GONE
+    }
+
+    private fun startLoadingState() {
+        activityRef.get()?.mapLoadingProgressBar?.visibility = View.VISIBLE
+    }
+
+    private fun addZone(zone: Zone) {
         val polygonOptions = PolygonOptions()
                 .addAll(zone.polygon)
                 .fillColor(zone.fillColor)
@@ -72,21 +97,27 @@ class GoogleMapView(mapsActivity: MapsActivity) : MapView, GoogleMap.OnCameraIdl
         googleMap.addPolygon(polygonOptions)
     }
 
-    override fun <T : Marker> addMarker(marker: T) {
-        when (marker) {
-            is VehicleMarker -> vehicleClusterManager.addItem(marker)
-            is ParkingMarker -> parkingClusterManager.addItem(marker)
+    private fun addMarker(clusterType: Cluster, marker: Marker) {
+        clusterOrchestrator.add(clusterType, marker)
+    }
+
+    private fun loadingObserver() = object : SingleObserver<Any> {
+        override fun onSuccess(t: Any) {
+            releaseLoadingState()
         }
+
+        override fun onSubscribe(d: Disposable) {
+            startLoadingState()
+        }
+
+        override fun onError(e: Throwable) {
+            Timber.e(e)
+            Toast.makeText(activityRef.get(), "Something went wrong :(", Toast.LENGTH_SHORT).show()
+        }
+
     }
 
-
-    //TODO
-    private fun testItems(): List<Marker> {
-        return listOf(
-                VehicleMarker(LatLng(50.850236, 16.486074), "Świdnica Łukasińskiego", "", MapColor.GreenColor(), ""),
-                VehicleMarker(LatLng(50.846533, 16.484635), "Świdnica Księcia Bolka", "", MapColor.GreenColor(), ""),
-                ParkingMarker(LatLng(50.849277, 16.486490), "Świdnica Gdyńska", "", MapColor.BlueColor(),2)
-        )
-    }
+    //MOCK TODO
+    private fun getSearchFilter() = SearchFilter(listOf("VEHICLE", "PARKING"))
 
 }

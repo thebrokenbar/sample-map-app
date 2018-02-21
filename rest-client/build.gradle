@@ -114,6 +114,8 @@ dependencies {
     }
     compile "io.gsonfire:gson-fire:$json_fire_version"
     compile "org.threeten:threetenbp:$threetenbp_version"
+    compile "com.squareup.retrofit2:adapter-rxjava2:$retrofit_version"
+
 
     testCompile "junit:junit:$junit_version"
 }

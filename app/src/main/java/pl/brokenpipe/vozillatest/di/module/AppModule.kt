@@ -13,4 +13,5 @@ class AppModule {
     fun provideTimberTree(): Timber.Tree {
         return Timber.DebugTree()
     }
+
 }

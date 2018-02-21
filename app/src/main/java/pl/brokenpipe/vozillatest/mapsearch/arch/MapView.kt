@@ -9,6 +9,5 @@ import pl.brokenpipe.vozillatest.mapsearch.model.Zone
  * Created by gwierzchanowski on 20.02.2018.
  */
 interface MapView : Arch.View, OnMapReadyCallback {
-    fun addZone(zone: Zone)
-    fun <T: Marker> addMarker(marker: T)
+
 }

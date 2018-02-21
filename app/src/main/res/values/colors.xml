@@ -4,8 +4,11 @@
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
 
-    <color name="markerRed">#da3636</color>
-    <color name="markerBlue">#3693da</color>
-    <color name="markerGreen">#8bda36</color>
-    <color name="markerBrown">#872d16</color>
+    <color name="mapRed">#d15151</color>
+    <color name="mapBlue">#80b5de</color>
+    <color name="mapGreen">#bfea8f</color>
+    <color name="mapBrown">#9b5543</color>
+    <color name="mapYellow">#f5e03f</color>
+    <color name="mapOrange">#e78b45</color>
+    <color name="mapWhite">#d7dada</color>
 </resources>
