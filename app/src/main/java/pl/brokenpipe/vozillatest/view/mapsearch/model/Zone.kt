@@ -1,4 +1,4 @@
-package pl.brokenpipe.vozillatest.mapsearch.model
+package pl.brokenpipe.vozillatest.view.mapsearch.model
 
 import android.support.annotation.ColorRes
 import com.google.android.gms.maps.model.LatLng

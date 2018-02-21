@@ -2,14 +2,14 @@ package pl.brokenpipe.vozillatest.di.module
 
 import dagger.Module
 import dagger.Provides
-import pl.brokenpipe.vozillatest.MapsActivity
+import pl.brokenpipe.vozillatest.view.MapsActivity
 import pl.brokenpipe.vozillatest.arch.Arch
 import pl.brokenpipe.vozillatest.di.scope.ActivityScope
 import pl.brokenpipe.vozillatest.interactor.model.ClusterType
 import pl.brokenpipe.vozillatest.interactor.model.MapObject
-import pl.brokenpipe.vozillatest.mapsearch.GoogleMapView
-import pl.brokenpipe.vozillatest.mapsearch.MapSearchViewModel
-import pl.brokenpipe.vozillatest.mapsearch.arch.MapView
+import pl.brokenpipe.vozillatest.view.mapsearch.GoogleMapView
+import pl.brokenpipe.vozillatest.presenter.mapsearch.MapSearchViewModel
+import pl.brokenpipe.vozillatest.view.mapsearch.arch.MapView
 
 /**
  * Created by gwierzchanowski on 20.02.2018.

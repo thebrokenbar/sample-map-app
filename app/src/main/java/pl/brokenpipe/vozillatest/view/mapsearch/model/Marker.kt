@@ -1,4 +1,4 @@
-package pl.brokenpipe.vozillatest.mapsearch.model
+package pl.brokenpipe.vozillatest.view.mapsearch.model
 
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.clustering.ClusterItem

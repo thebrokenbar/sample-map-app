@@ -12,12 +12,15 @@ ext {
     rxKotlinVer = '2.2.0'
     rxFirebaseDatabaseVer = '11.8.0.0'
     googleMapsUtilsVer = "0.5"
+    daggerVer = '2.14.1'
 
     //tests
     jUnitVer = '4.12'
     espressoVer = '3.0.1'
     testRunnerVer = '1.0.1'
-    daggerVer = '2.14.1'
+    mockitoVer = '2.8.9'
+    kotlinMockitoVer = '1.5.0'
+
 
     kaptDependencies = [
             "android.arch.lifecycle:compiler:$architectureComponentsVer",
@@ -49,6 +52,8 @@ ext {
 
     testImplementationDependencies = [
             "junit:junit:$jUnitVer",
+            "org.mockito:mockito-core:$mockitoVer",
+            "com.nhaarman:mockito-kotlin:$kotlinMockitoVer",
             "android.arch.core:core-testing:$architectureComponentsVer"
     ]
 

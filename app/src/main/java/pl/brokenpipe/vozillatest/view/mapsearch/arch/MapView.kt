@@ -1,9 +1,9 @@
-package pl.brokenpipe.vozillatest.mapsearch.arch
+package pl.brokenpipe.vozillatest.view.mapsearch.arch
 
 import com.google.android.gms.maps.OnMapReadyCallback
 import pl.brokenpipe.vozillatest.arch.Arch
-import pl.brokenpipe.vozillatest.mapsearch.model.Marker
-import pl.brokenpipe.vozillatest.mapsearch.model.Zone
+import pl.brokenpipe.vozillatest.view.mapsearch.model.Marker
+import pl.brokenpipe.vozillatest.view.mapsearch.model.Zone
 
 /**
  * Created by gwierzchanowski on 20.02.2018.

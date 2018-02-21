@@ -1,4 +1,4 @@
-package pl.brokenpipe.vozillatest.mapsearch.model
+package pl.brokenpipe.vozillatest.view.mapsearch.model
 
 import pl.brokenpipe.vozillatest.R
 
@@ -13,5 +13,9 @@ sealed class MapColor(val colorResId: Int) {
     class YellowColor: MapColor(R.color.mapYellow)
     class OrangeColor: MapColor(R.color.mapOrange)
     class WhiteColor: MapColor(R.color.mapWhite)
+
+    override fun equals(other: Any?): Boolean {
+        return other != null && this::class == other::class
+    }
 
 }

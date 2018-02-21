@@ -1,0 +1,29 @@
+apply plugin: 'jacoco'
+
+jacoco {
+    toolVersion = "0.7.9"
+}
+
+
+task jacocoTestCoverageReport(type: JacocoReport, dependsOn: 'test', group: 'jacoco') {
+    reports {
+        xml.enabled = false
+        html.enabled = true
+    }
+
+    def excludes = [
+            "**/vozillatest/view/*",
+            "**/vozillatest/interactor/model/*",
+            "**/vozillatest/repository/model/*",
+            "**/vozillatest/di/*",
+            "**/vozillatest/arch/*",
+            "**/vozillatest/platform/*"
+    ]
+
+    def debugTree = fileTree("$buildDir/tmp/kotlin-classes/debug/pl").exclude(excludes)
+    def mainSrc = "${project.projectDir}/src/main/java"
+
+    sourceDirectories = files([mainSrc])
+    classDirectories = files([debugTree])
+    executionData = files("$buildDir/jacoco/testDebugUnitTest.exec")
+}

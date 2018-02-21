@@ -4,9 +4,9 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.maps.android.ui.IconGenerator
 import dagger.Module
 import dagger.Provides
-import pl.brokenpipe.vozillatest.MapsActivity
+import pl.brokenpipe.vozillatest.view.MapsActivity
 import pl.brokenpipe.vozillatest.di.scope.ViewScope
-import pl.brokenpipe.vozillatest.mapsearch.cluster.ClusterOrchestrator
+import pl.brokenpipe.vozillatest.view.mapsearch.cluster.ClusterOrchestrator
 import java.lang.ref.WeakReference
 
 /**

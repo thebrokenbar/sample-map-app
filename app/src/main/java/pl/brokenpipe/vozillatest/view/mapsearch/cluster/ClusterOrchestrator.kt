@@ -1,11 +1,11 @@
-package pl.brokenpipe.vozillatest.mapsearch.cluster
+package pl.brokenpipe.vozillatest.view.mapsearch.cluster
 
 import android.content.Context
 import android.os.Build
 import com.google.android.gms.maps.GoogleMap
 import com.google.maps.android.clustering.ClusterManager
 import com.google.maps.android.ui.IconGenerator
-import pl.brokenpipe.vozillatest.mapsearch.model.Marker
+import pl.brokenpipe.vozillatest.view.mapsearch.model.Marker
 import java.lang.ref.WeakReference
 
 
@@ -19,9 +19,9 @@ class ClusterOrchestrator(context: Context,
 
     private val contextRef = WeakReference(context)
 
-    private val clusterManagers: HashMap<Cluster, ClusterManager<Marker>> = hashMapOf()
+    private val clusterManagers: HashMap<MarkersGroup, ClusterManager<Marker>> = hashMapOf()
 
-    fun initialize(configs: List<Cluster>) {
+    fun initialize(configs: List<MarkersGroup>) {
         val context = contextRef.get() ?: throw IllegalStateException("Context is lost")
 
         configs.forEach {
@@ -45,14 +45,14 @@ class ClusterOrchestrator(context: Context,
         }
     }
 
-    fun cluster(cluster: Cluster) {
-        clusterManagers[cluster]?.cluster()
-                ?: throw IllegalArgumentException("No cluster of id $cluster")
+    fun cluster(markersGroup: MarkersGroup) {
+        clusterManagers[markersGroup]?.cluster()
+                ?: throw IllegalArgumentException("No markersGroup of id $markersGroup")
     }
 
-    fun add(cluster: Cluster, marker: Marker) {
-        clusterManagers[cluster]?.addItem(marker)
-                ?: throw IllegalArgumentException("No cluster of id $cluster")
+    fun add(markersGroup: MarkersGroup, marker: Marker) {
+        clusterManagers[markersGroup]?.addItem(marker)
+                ?: throw IllegalArgumentException("No markersGroup of id $markersGroup")
     }
 
     override fun onCameraIdle() {
@@ -67,9 +67,9 @@ class ClusterOrchestrator(context: Context,
         }
     }
 
-    fun clearMarkers(cluster: Cluster) {
-        clusterManagers[cluster]?.clearItems()
-                ?: throw IllegalArgumentException("No cluster of id $cluster")
+    fun clearMarkers(markersGroup: MarkersGroup) {
+        clusterManagers[markersGroup]?.clearItems()
+                ?: throw IllegalArgumentException("No markersGroup of id $markersGroup")
     }
 
 }

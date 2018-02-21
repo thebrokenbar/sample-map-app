@@ -1,26 +1,23 @@
-package pl.brokenpipe.vozillatest.mapsearch
+package pl.brokenpipe.vozillatest.view.mapsearch
 
 import android.view.View
 import android.widget.Toast
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.PolygonOptions
-import io.reactivex.Single
 import io.reactivex.SingleObserver
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
-import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_maps.*
-import pl.brokenpipe.vozillatest.MapsActivity
+import pl.brokenpipe.vozillatest.view.MapsActivity
 import pl.brokenpipe.vozillatest.di.module.MapViewModule
-import pl.brokenpipe.vozillatest.interactor.model.ClusterType
-import pl.brokenpipe.vozillatest.mapsearch.arch.MapSearchPresenter
-import pl.brokenpipe.vozillatest.mapsearch.arch.MapView
-import pl.brokenpipe.vozillatest.mapsearch.cluster.Cluster
-import pl.brokenpipe.vozillatest.mapsearch.cluster.ClusterOrchestrator
-import pl.brokenpipe.vozillatest.mapsearch.model.Marker
-import pl.brokenpipe.vozillatest.mapsearch.model.SearchFilter
-import pl.brokenpipe.vozillatest.mapsearch.model.Zone
+import pl.brokenpipe.vozillatest.view.mapsearch.arch.MapSearchPresenter
+import pl.brokenpipe.vozillatest.view.mapsearch.arch.MapView
+import pl.brokenpipe.vozillatest.view.mapsearch.cluster.MarkersGroup
+import pl.brokenpipe.vozillatest.view.mapsearch.cluster.ClusterOrchestrator
+import pl.brokenpipe.vozillatest.view.mapsearch.model.Marker
+import pl.brokenpipe.vozillatest.view.mapsearch.model.SearchFilter
+import pl.brokenpipe.vozillatest.view.mapsearch.model.Zone
 import timber.log.Timber
 import java.lang.ref.WeakReference
 import javax.inject.Inject
@@ -60,8 +57,8 @@ class GoogleMapView(mapsActivity: MapsActivity,
     }
 
 
-    private fun addAllMarkers(clusterMap: Map<Cluster, List<Marker>>) {
-        clusterMap.forEach { cluster ->
+    private fun addAllMarkers(markersGroupMap: Map<MarkersGroup, List<Marker>>) {
+        markersGroupMap.forEach { cluster ->
             cluster.value.forEach {
                 addMarker(cluster.key, it)
             }
@@ -69,7 +66,7 @@ class GoogleMapView(mapsActivity: MapsActivity,
     }
 
     private fun configureClusters() {
-        presenter.getClusterConfigs()
+        presenter.getMarkersGroup()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnSuccess { clusterOrchestrator.initialize(it) }
@@ -97,7 +94,7 @@ class GoogleMapView(mapsActivity: MapsActivity,
         googleMap.addPolygon(polygonOptions)
     }
 
-    private fun addMarker(clusterType: Cluster, marker: Marker) {
+    private fun addMarker(clusterType: MarkersGroup, marker: Marker) {
         clusterOrchestrator.add(clusterType, marker)
     }
 

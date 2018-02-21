@@ -1,4 +1,4 @@
-package pl.brokenpipe.vozillatest.mapsearch.cluster
+package pl.brokenpipe.vozillatest.view.mapsearch.cluster
 
 import android.content.Context
 import android.graphics.Bitmap
@@ -18,7 +18,7 @@ import com.google.maps.android.clustering.ClusterManager
 import com.google.maps.android.clustering.view.DefaultClusterRenderer
 import com.google.maps.android.ui.IconGenerator
 import pl.brokenpipe.vozillatest.R
-import pl.brokenpipe.vozillatest.mapsearch.model.Marker
+import pl.brokenpipe.vozillatest.view.mapsearch.model.Marker
 import java.lang.ref.WeakReference
 
 /**

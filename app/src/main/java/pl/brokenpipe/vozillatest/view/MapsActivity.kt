@@ -1,11 +1,13 @@
-package pl.brokenpipe.vozillatest
+package pl.brokenpipe.vozillatest.view
 
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import com.google.android.gms.maps.SupportMapFragment
+import pl.brokenpipe.vozillatest.R
+import pl.brokenpipe.vozillatest.platform.VozillaApplication
 import pl.brokenpipe.vozillatest.di.component.ActivityComponent
 import pl.brokenpipe.vozillatest.di.module.MapsActivityModule
-import pl.brokenpipe.vozillatest.mapsearch.arch.MapView
+import pl.brokenpipe.vozillatest.view.mapsearch.arch.MapView
 import javax.inject.Inject
 
 class MapsActivity : AppCompatActivity() {

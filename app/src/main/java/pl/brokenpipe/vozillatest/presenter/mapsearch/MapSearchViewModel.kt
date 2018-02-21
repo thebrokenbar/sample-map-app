@@ -1,4 +1,4 @@
-package pl.brokenpipe.vozillatest.mapsearch
+package pl.brokenpipe.vozillatest.presenter.mapsearch
 
 import android.arch.lifecycle.ViewModel
 import com.google.android.gms.maps.model.LatLng
@@ -7,11 +7,11 @@ import io.reactivex.Single
 import pl.brokenpipe.vozillatest.arch.Arch
 import pl.brokenpipe.vozillatest.interactor.model.ClusterType
 import pl.brokenpipe.vozillatest.interactor.model.MapObject
-import pl.brokenpipe.vozillatest.mapsearch.arch.MapSearchPresenter
-import pl.brokenpipe.vozillatest.mapsearch.cluster.Cluster
-import pl.brokenpipe.vozillatest.mapsearch.model.MapColor
-import pl.brokenpipe.vozillatest.mapsearch.model.Marker
-import pl.brokenpipe.vozillatest.mapsearch.model.SearchFilter
+import pl.brokenpipe.vozillatest.view.mapsearch.arch.MapSearchPresenter
+import pl.brokenpipe.vozillatest.view.mapsearch.cluster.MarkersGroup
+import pl.brokenpipe.vozillatest.view.mapsearch.model.MapColor
+import pl.brokenpipe.vozillatest.view.mapsearch.model.Marker
+import pl.brokenpipe.vozillatest.view.mapsearch.model.SearchFilter
 
 /**
  * Created by gwierzchanowski on 20.02.2018.
@@ -31,32 +31,32 @@ class MapSearchViewModel(
         val DEFAULT_CLUSTER_COLOR = MapColor.WhiteColor()
     }
 
-    override fun getClusterConfigs(): Single<List<Cluster>> {
+    override fun getMarkersGroup(): Single<List<MarkersGroup>> {
         return getClusterTypes.execute()
                 .flatMap { Observable.fromIterable(it) }
-                .map { parseClusterTypeToCluster(it) }
+                .map { parseClusterTypeToMarkersGroup(it) }
                 .toList()
     }
 
-    private fun parseClusterTypeToCluster(clusterType: ClusterType): Cluster {
+    private fun parseClusterTypeToMarkersGroup(clusterType: ClusterType): MarkersGroup {
         val color = getMapColor(clusterType.id)
-        return Cluster(clusterType.id, color, clusterType.options)
+        return MarkersGroup(clusterType.id, color, clusterType.options)
     }
 
     private fun getMapColor(clusterTypeId: String) =
             CLUSTER_TYPES_COLORS.getOrElse(clusterTypeId) { DEFAULT_CLUSTER_COLOR }
 
-    override fun getMarkers(searchFilter: SearchFilter): Single<Map<Cluster, List<Marker>>> {
+    override fun getMarkers(searchFilter: SearchFilter): Single<Map<MarkersGroup, List<Marker>>> {
         return getMapObjects.execute(searchFilter.objectTypes)
                 .first(emptyMap())
                 .flatMap { Single.just(prepareClusters(it)) }
     }
 
-    private fun prepareClusters(map: Map<ClusterType, List<MapObject>>): HashMap<Cluster, List<Marker>> {
-        val clusters = hashMapOf<Cluster, List<Marker>>()
+    private fun prepareClusters(map: Map<ClusterType, List<MapObject>>): HashMap<MarkersGroup, List<Marker>> {
+        val clusters = hashMapOf<MarkersGroup, List<Marker>>()
 
         map.forEach { mapEntry ->
-            val cluster = parseClusterTypeToCluster(mapEntry.key)
+            val cluster = parseClusterTypeToMarkersGroup(mapEntry.key)
             val markers: List<Marker> = mapEntry.value
                     .map {
                         Marker(it.id, LatLng(it.position.first, it.position.second),

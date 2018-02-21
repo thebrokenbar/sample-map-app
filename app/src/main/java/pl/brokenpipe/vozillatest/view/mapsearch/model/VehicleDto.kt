@@ -1,4 +1,4 @@
-package pl.brokenpipe.vozillatest.mapsearch.model
+package pl.brokenpipe.vozillatest.view.mapsearch.model
 
 
 data class VehicleDto(

@@ -1,4 +1,4 @@
-package pl.brokenpipe.vozillatest
+package pl.brokenpipe.vozillatest.platform
 
 import android.app.Application
 import pl.brokenpipe.vozillatest.di.component.AppComponent

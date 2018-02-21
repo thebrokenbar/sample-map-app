@@ -1,7 +1,7 @@
 package pl.brokenpipe.vozillatest.di.component
 
 import dagger.Subcomponent
-import pl.brokenpipe.vozillatest.MapsActivity
+import pl.brokenpipe.vozillatest.view.MapsActivity
 import pl.brokenpipe.vozillatest.di.module.MapViewModule
 import pl.brokenpipe.vozillatest.di.module.MapsActivityModule
 import pl.brokenpipe.vozillatest.di.scope.ActivityScope
