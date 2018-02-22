@@ -3,7 +3,7 @@ package pl.brokenpipe.vozillatest.repository
 import io.reactivex.Maybe
 import io.swagger.client.api.MapApi
 import io.swagger.client.model.MapSearchResponse
-import pl.brokenpipe.vozillatest.arch.Arch
+import pl.brokenpipe.vozillatest.arch.Repository
 
 
 /**
@@ -11,7 +11,7 @@ import pl.brokenpipe.vozillatest.arch.Arch
  */
 
 class MapObjectsRepository(private val mapApi: MapApi)
-    : Arch.Repository<MapSearchResponse, MapSpecification> {
+    : Repository<MapSearchResponse, MapSpecification> {
 
     override fun get(spec: MapSpecification): Maybe<MapSearchResponse> {
         return mapApi.findMapObjects(spec.objectType, spec.vehicleType, spec.vehicleModel,

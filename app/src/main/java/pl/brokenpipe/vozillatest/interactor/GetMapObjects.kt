@@ -1,14 +1,14 @@
 package pl.brokenpipe.vozillatest.interactor
 
 import io.reactivex.Observable
-import pl.brokenpipe.vozillatest.arch.Arch
+import pl.brokenpipe.vozillatest.arch.UseCase
 import pl.brokenpipe.vozillatest.interactor.model.ClusterType
 import pl.brokenpipe.vozillatest.interactor.model.MapObject
 
 /**
  * Created by gwierzchanowski on 21.02.2018.
  */
-class GetMapObjects : Arch.UseCase<List<String>, Map<ClusterType, List<MapObject>>> {
+class GetMapObjects : UseCase<List<String>, Map<ClusterType, List<MapObject>>> {
     override fun execute(param: List<String>?): Observable<Map<ClusterType, List<MapObject>>> {
         //TODO
         //mock

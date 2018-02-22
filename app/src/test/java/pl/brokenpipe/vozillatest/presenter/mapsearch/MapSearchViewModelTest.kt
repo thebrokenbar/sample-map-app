@@ -1,17 +1,16 @@
-package pl.brokenpipe.vozillatest.mapsearch
+package pl.brokenpipe.vozillatest.presenter.mapsearch
 
 import com.nhaarman.mockito_kotlin.whenever
 import io.reactivex.Observable
+import org.junit.Assert.*
 import org.junit.Before
-
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mock
 import org.mockito.junit.MockitoJUnitRunner
-import pl.brokenpipe.vozillatest.arch.Arch
+import pl.brokenpipe.vozillatest.arch.UseCase
 import pl.brokenpipe.vozillatest.interactor.model.ClusterType
 import pl.brokenpipe.vozillatest.interactor.model.MapObject
-import pl.brokenpipe.vozillatest.presenter.mapsearch.MapSearchViewModel
 
 /**
  * Created by gwierzchanowski on 22.02.2018.
@@ -22,10 +21,10 @@ class MapSearchViewModelTest {
     private lateinit var mapSearchViewModel: MapSearchViewModel
 
     @Mock
-    lateinit var getClusterTypes: Arch.UseCase<Unit, List<ClusterType>>
+    lateinit var getClusterTypes: UseCase<Unit, List<ClusterType>>
 
     @Mock
-    lateinit var getMapObjects: Arch.UseCase<List<String>, Map<ClusterType, List<MapObject>>>
+    lateinit var getMapObjects: UseCase<List<String>, Map<ClusterType, List<MapObject>>>
 
     @Before
     fun setUp() {

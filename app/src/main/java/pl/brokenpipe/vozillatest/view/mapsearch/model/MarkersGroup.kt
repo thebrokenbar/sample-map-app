@@ -1,4 +1,4 @@
-package pl.brokenpipe.vozillatest.view.mapsearch.cluster
+package pl.brokenpipe.vozillatest.view.mapsearch.model
 
 import pl.brokenpipe.vozillatest.view.mapsearch.model.MapColor
 

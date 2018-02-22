@@ -11,9 +11,9 @@ import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_maps.*
 import pl.brokenpipe.vozillatest.view.MapsActivity
 import pl.brokenpipe.vozillatest.di.module.MapViewModule
-import pl.brokenpipe.vozillatest.view.mapsearch.arch.MapSearchPresenter
-import pl.brokenpipe.vozillatest.view.mapsearch.arch.MapView
-import pl.brokenpipe.vozillatest.view.mapsearch.cluster.MarkersGroup
+import pl.brokenpipe.vozillatest.arch.mapsearch.MapSearchPresenter
+import pl.brokenpipe.vozillatest.arch.mapsearch.MapView
+import pl.brokenpipe.vozillatest.view.mapsearch.model.MarkersGroup
 import pl.brokenpipe.vozillatest.view.mapsearch.cluster.ClusterOrchestrator
 import pl.brokenpipe.vozillatest.view.mapsearch.model.Marker
 import pl.brokenpipe.vozillatest.view.mapsearch.model.SearchFilter

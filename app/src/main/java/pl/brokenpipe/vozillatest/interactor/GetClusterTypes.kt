@@ -1,13 +1,13 @@
 package pl.brokenpipe.vozillatest.interactor
 
 import io.reactivex.Observable
-import pl.brokenpipe.vozillatest.arch.Arch
+import pl.brokenpipe.vozillatest.arch.UseCase
 import pl.brokenpipe.vozillatest.interactor.model.ClusterType
 
 /**
  * Created by gwierzchanowski on 21.02.2018.
  */
-class GetClusterTypes: Arch.UseCase<Unit, List<ClusterType>> {
+class GetClusterTypes: UseCase<Unit, List<ClusterType>> {
     override fun execute(param: Unit?): Observable<List<ClusterType>> {
         //TODO
         //mock
