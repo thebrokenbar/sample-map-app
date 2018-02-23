@@ -1,7 +1,5 @@
 package pl.brokenpipe.vozillatest.view.mapsearch.model
 
-import pl.brokenpipe.vozillatest.view.mapsearch.model.MapColor
-
 /**
  * Created by gwierzchanowski on 20.02.2018.
  */

@@ -12,5 +12,5 @@ import pl.brokenpipe.vozillatest.view.mapsearch.model.SearchFilter
  */
 interface MapSearchPresenter : Presenter {
     fun getMarkersGroup(): Single<List<MarkersGroup>>
-    fun getMarkers(searchFilter: SearchFilter): Single<Map<MarkersGroup, List<Marker>>>
+    fun fetchMapObjects(searchFilter: SearchFilter): Single<Map<MarkersGroup, List<Marker>>>
 }

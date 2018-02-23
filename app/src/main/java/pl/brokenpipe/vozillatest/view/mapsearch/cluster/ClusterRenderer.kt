@@ -38,7 +38,7 @@ class ClusterRenderer(
 
     private var clusterIconsCache = SparseArray<Bitmap>()
 
-    private var markerIconsCache = hashMapOf<String ,Bitmap>()
+    private var markerIconsCache = HashMap<String, Bitmap>()
 
     private fun makeClusterDrawable(): ShapeDrawable {
         val drawable = ShapeDrawable(OvalShape())
@@ -47,11 +47,11 @@ class ClusterRenderer(
     }
 
     override fun onBeforeClusterItemRendered(item: Marker, markerOptions: MarkerOptions) {
-        val icon = markerIconsCache.getOrPut(item.objectId) {
-            iconGenerator
-                    .apply { setColor(getColorFromMarker(item)) }
-                    .makeIcon(item.name)
-        }
+        val icon = markerIconsCache[item.name]
+                ?: iconGenerator
+                        .apply { setColor(getColorFromMarker(item)) }
+                        .makeIcon(item.name)
+                        .apply { markerIconsCache[item.name] = this }
 
         markerOptions.icon(BitmapDescriptorFactory.fromBitmap(icon))
     }

@@ -13,6 +13,7 @@ import org.apache.oltu.oauth2.client.request.OAuthClientRequest.AuthenticationRe
 import org.apache.oltu.oauth2.client.request.OAuthClientRequest.TokenRequestBuilder;
 import org.threeten.bp.format.DateTimeFormatter;
 
+import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Converter;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
@@ -112,7 +113,7 @@ public class ApiClient {
         json = new JSON();
         okBuilder = new OkHttpClient.Builder();
 
-        String baseUrl = "https://test.vozilla.pl/api-client-mobile";
+        String baseUrl = BuildConfig.HOST;
         if (!baseUrl.endsWith("/"))
             baseUrl = baseUrl + "/";
 
@@ -125,7 +126,9 @@ public class ApiClient {
 
     public <S> S createService(Class<S> serviceClass) {
         return adapterBuilder
-                .client(okBuilder.build())
+                .client(okBuilder
+                        .addInterceptor(new HttpLoggingInterceptor())
+                        .build())
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .build()
                 .create(serviceClass);

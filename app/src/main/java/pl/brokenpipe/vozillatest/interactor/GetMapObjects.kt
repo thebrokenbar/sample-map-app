@@ -9,6 +9,7 @@ import pl.brokenpipe.vozillatest.interactor.model.MapObject
  * Created by gwierzchanowski on 21.02.2018.
  */
 class GetMapObjects : UseCase<List<String>, Map<ClusterType, List<MapObject>>> {
+
     override fun execute(param: List<String>?): Observable<Map<ClusterType, List<MapObject>>> {
         //TODO
         //mock
@@ -25,9 +26,9 @@ class GetMapObjects : UseCase<List<String>, Map<ClusterType, List<MapObject>>> {
                                 MapObject("VEHICLE6", Pair(50.850136, 16.488175), "NISSAN e-NV200 3", "Zarezerwowany")
                         )),
                         Pair(ClusterType("PARKING", ""), listOf(
-                                MapObject("PARKING1", Pair(50.848787, 16.483775), "2/4", "Parking Kanonierska"),
-                                MapObject("PARKING2", Pair(50.847703, 16.483786), "1/10", "Parking Policja"),
-                                MapObject("PARKING3", Pair(50.847073, 16.482648), "2/3", "Parking Boczna")
+                                MapObject("PARKING1", Pair(50.848787, 16.483775), "2/4", "ParkingModel Kanonierska"),
+                                MapObject("PARKING2", Pair(50.847703, 16.483786), "1/10", "ParkingModel Policja"),
+                                MapObject("PARKING3", Pair(50.847073, 16.482648), "2/3", "ParkingModel Boczna")
                         ))
                 )
         )

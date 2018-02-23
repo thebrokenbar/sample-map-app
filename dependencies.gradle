@@ -24,7 +24,8 @@ ext {
 
     kaptDependencies = [
             "android.arch.lifecycle:compiler:$architectureComponentsVer",
-            "com.google.dagger:dagger-compiler:$daggerVer"
+            "com.google.dagger:dagger-compiler:$daggerVer",
+            "com.android.databinding:compiler:$gradleVer"
     ]
 
     implementationDependencies = [

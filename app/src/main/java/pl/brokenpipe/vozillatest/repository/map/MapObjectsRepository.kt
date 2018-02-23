@@ -1,9 +1,11 @@
-package pl.brokenpipe.vozillatest.repository
+package pl.brokenpipe.vozillatest.repository.map
 
 import io.reactivex.Maybe
+import io.reactivex.Observable
 import io.swagger.client.api.MapApi
 import io.swagger.client.model.MapSearchResponse
 import pl.brokenpipe.vozillatest.arch.Repository
+import pl.brokenpipe.vozillatest.repository.map.specification.MapSpecification
 
 
 /**
@@ -13,8 +15,8 @@ import pl.brokenpipe.vozillatest.arch.Repository
 class MapObjectsRepository(private val mapApi: MapApi)
     : Repository<MapSearchResponse, MapSpecification> {
 
-    override fun get(spec: MapSpecification): Maybe<MapSearchResponse> {
+    override fun get(spec: MapSpecification): Observable<MapSearchResponse> {
         return mapApi.findMapObjects(spec.objectType, spec.vehicleType, spec.vehicleModel,
-                spec.vehicleStatus, spec.poiCategory, spec.location)
+                spec.vehicleStatus, spec.poiCategory, spec.location).toObservable()
     }
 }

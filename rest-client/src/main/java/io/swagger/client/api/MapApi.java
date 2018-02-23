@@ -51,7 +51,7 @@ public interface MapApi {
    * @return Call&lt;Void&gt;
    */
   @GET("map")
-  Maybe<MapSearchResponse> findMapObjects(
+  Single<MapSearchResponse> findMapObjects(
     @retrofit2.http.Query("objectType") List<String> objectType, @retrofit2.http.Query("vehicleType") List<String> vehicleType, @retrofit2.http.Query("vehicleModel") List<String> vehicleModel, @retrofit2.http.Query("vehicleStatus") List<String> vehicleStatus, @retrofit2.http.Query("poiCategory") List<String> poiCategory, @retrofit2.http.Query("location") String location
   );
 

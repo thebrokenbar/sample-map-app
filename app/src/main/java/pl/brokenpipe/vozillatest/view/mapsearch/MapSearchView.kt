@@ -2,13 +2,17 @@ package pl.brokenpipe.vozillatest.view.mapsearch
 
 import android.view.View
 import android.widget.Toast
+import com.google.android.gms.maps.CameraUpdate
+import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.PolygonOptions
 import io.reactivex.SingleObserver
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_maps.*
+import pl.brokenpipe.vozillatest.R
 import pl.brokenpipe.vozillatest.view.MapsActivity
 import pl.brokenpipe.vozillatest.di.module.MapViewModule
 import pl.brokenpipe.vozillatest.arch.mapsearch.MapSearchPresenter
@@ -25,10 +29,12 @@ import javax.inject.Inject
 /**
  * Created by gwierzchanowski on 20.02.2018.
  */
-class GoogleMapView(mapsActivity: MapsActivity,
+class MapSearchView(mapsActivity: MapsActivity,
                     private val presenter: MapSearchPresenter) : MapView {
 
     private val activityRef = WeakReference(mapsActivity)
+
+    private val mapCenterBoundariesPadding = mapsActivity.resources.getDimension(R.dimen.mapCenterBoundariesPadding)
 
     @Inject
     lateinit var clusterOrchestrator: ClusterOrchestrator
@@ -48,15 +54,6 @@ class GoogleMapView(mapsActivity: MapsActivity,
         this.googleMap.setOnCameraIdleListener(clusterOrchestrator)
     }
 
-    fun refresh() {
-        presenter.getMarkers(getSearchFilter())
-                .doOnSuccess { addAllMarkers(it) }
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(loadingObserver())
-    }
-
-
     private fun addAllMarkers(markersGroupMap: Map<MarkersGroup, List<Marker>>) {
         markersGroupMap.forEach { cluster ->
             cluster.value.forEach {
@@ -71,10 +68,30 @@ class GoogleMapView(mapsActivity: MapsActivity,
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnSuccess { clusterOrchestrator.initialize(it) }
                 .observeOn(Schedulers.io())
-                .flatMap { presenter.getMarkers(getSearchFilter()) }
+                .flatMap { presenter.fetchMapObjects(getSearchFilter()) }
                 .observeOn(AndroidSchedulers.mainThread())
-                .doOnSuccess { addAllMarkers(it) }
+                .doOnSuccess {
+                    centerMapOnAllMarkers(it)
+                    addAllMarkers(it)
+                }
                 .subscribe(loadingObserver())
+    }
+
+    private fun centerMapOnAllMarkers(markers: Map<MarkersGroup, List<Marker>>) {
+        val allMarkers = mutableListOf<Marker>()
+        markers.forEach { group ->
+            group.value.forEach {
+                allMarkers.add(it)
+            }
+        }
+
+        val boundsBuilder = LatLngBounds.builder()
+        allMarkers.forEach {
+            boundsBuilder.include(it.position)
+        }
+
+        googleMap.moveCamera(CameraUpdateFactory.newLatLngBounds(boundsBuilder.build(),
+                mapCenterBoundariesPadding.toInt()))
     }
 
     private fun releaseLoadingState() {
@@ -110,11 +127,12 @@ class GoogleMapView(mapsActivity: MapsActivity,
         override fun onError(e: Throwable) {
             Timber.e(e)
             Toast.makeText(activityRef.get(), "Something went wrong :(", Toast.LENGTH_SHORT).show()
+            releaseLoadingState()
         }
 
     }
 
     //MOCK TODO
-    private fun getSearchFilter() = SearchFilter(listOf("VEHICLE", "PARKING"))
+    private fun getSearchFilter() = SearchFilter(listOf("VEHICLE", "PARKING", "CHARGER", "POI"))
 
 }

@@ -1,4 +1,4 @@
-package pl.brokenpipe.vozillatest.repository
+package pl.brokenpipe.vozillatest.repository.map.specification
 
 /**
  * Created by gwierzchanowski on 20.02.2018.
