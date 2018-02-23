@@ -3,14 +3,20 @@ package pl.brokenpipe.vozillatest.view
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import com.google.android.gms.maps.SupportMapFragment
+import io.reactivex.subjects.MaybeSubject
 import pl.brokenpipe.vozillatest.R
 import pl.brokenpipe.vozillatest.platform.VozillaApplication
 import pl.brokenpipe.vozillatest.di.component.ActivityComponent
 import pl.brokenpipe.vozillatest.di.module.MapsActivityModule
 import pl.brokenpipe.vozillatest.arch.mapsearch.MapView
+import pl.brokenpipe.vozillatest.view.filters.FiltersDialogObservable
+import pl.brokenpipe.vozillatest.view.mapsearch.model.SearchFilter
 import javax.inject.Inject
 
-class MapsActivity : AppCompatActivity() {
+class MapsActivity : AppCompatActivity(), FiltersDialogObservable {
+
+    @Inject
+    protected lateinit var filterDialogSubject: MaybeSubject<SearchFilter>
 
     @Inject
     lateinit var mapView: MapView
@@ -33,5 +39,5 @@ class MapsActivity : AppCompatActivity() {
         mapFragment.getMapAsync(mapView)
     }
 
-
+    override fun getSubject() = filterDialogSubject
 }
