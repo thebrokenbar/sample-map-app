@@ -6,8 +6,9 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.PolygonOptions
+import io.reactivex.Completable
+import io.reactivex.Observer
 import io.reactivex.Single
-import io.reactivex.SingleObserver
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.rxkotlin.subscribeBy
@@ -22,7 +23,6 @@ import pl.brokenpipe.vozillatest.view.filters.FiltersDialog
 import pl.brokenpipe.vozillatest.view.mapsearch.cluster.ClusterOrchestrator
 import pl.brokenpipe.vozillatest.view.mapsearch.model.Marker
 import pl.brokenpipe.vozillatest.view.mapsearch.model.MarkersGroup
-import pl.brokenpipe.vozillatest.view.mapsearch.model.SearchFilter
 import pl.brokenpipe.vozillatest.view.mapsearch.model.Zone
 import timber.log.Timber
 import java.lang.ref.WeakReference
@@ -52,15 +52,16 @@ class MapSearchView(mapsActivity: MapsActivity,
 
     private var filtersDialogResultDisposable: Disposable? = null
 
-    private val loadingObserver = object : SingleObserver<Any> {
-        override fun onSuccess(t: Any) {
+    private val loadingObserver = object : Observer<Any> {
+        override fun onComplete() {
+            Timber.d("Search Observer completed")
+        }
+
+        override fun onNext(t: Any) {
             releaseLoadingState()
         }
 
-        override fun onSubscribe(d: Disposable) {
-            clearAll()
-            startLoadingState()
-        }
+        override fun onSubscribe(d: Disposable) {}
 
         override fun onError(e: Throwable) {
             Timber.e(e)
@@ -71,7 +72,7 @@ class MapSearchView(mapsActivity: MapsActivity,
 
     init {
         activity.filterButton.setOnClickListener { showFiltersDialog() }
-        activity.refreshButton.setOnClickListener { refresh() }
+        activity.refreshButton.setOnClickListener { observeFilterChanges() }
     }
 
     override fun onMapReady(googleMap: GoogleMap) {
@@ -83,13 +84,7 @@ class MapSearchView(mapsActivity: MapsActivity,
 
         this.googleMap.setOnCameraIdleListener(clusterOrchestrator)
 
-        refresh()
-    }
-
-    private fun refresh() {
-        presenter.getSearchFilter()
-                .flatMap { fetchByFilter(it) }
-                .subscribe(loadingObserver)
+        observeFilterChanges()
     }
 
     private fun addAllMarkers(markersGroupMap: Map<MarkersGroup, List<Marker>>) {
@@ -101,18 +96,23 @@ class MapSearchView(mapsActivity: MapsActivity,
         clusterOrchestrator.clusterAll()
     }
 
-    private fun fetchByFilter(searchFilter: SearchFilter): Single<Map<MarkersGroup, List<Marker>>> {
-        return presenter.getMarkersGroup()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .doOnSuccess { clusterOrchestrator.initialize(it) }
-                .observeOn(Schedulers.io())
-                .flatMap { presenter.fetchMapObjects(searchFilter) }
-                .observeOn(AndroidSchedulers.mainThread())
-                .doOnSuccess {
-                    addAllMarkers(it)
-                    centerMapOnAllMarkers(it)
+    private fun observeFilterChanges() {
+        return presenter.getSearchFilter()
+                .doOnNext { startLoadingState() }
+                .flatMapSingle {
+                    presenter.getMarkersGroup()
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .doOnSuccess { clusterOrchestrator.initialize(it) }
+                            .observeOn(Schedulers.io())
+                            .flatMap { presenter.fetchMarkers() }
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .doOnSuccess {
+                                addAllMarkers(it)
+                                centerMapOnAllMarkers(it)
+                            }
                 }
+                .subscribe(loadingObserver)
 
     }
 
@@ -140,6 +140,7 @@ class MapSearchView(mapsActivity: MapsActivity,
     }
 
     private fun startLoadingState() {
+        clearAll()
         activityRef.get()?.mapLoadingProgressBar?.visibility = View.VISIBLE
     }
 
@@ -157,16 +158,12 @@ class MapSearchView(mapsActivity: MapsActivity,
     }
 
     private fun showFiltersDialog() {
-        if(filtersDialogResultDisposable?.isDisposed == false) {
+        if (filtersDialogResultDisposable?.isDisposed == false) {
             filtersDialogResultDisposable?.dispose()
         }
 
-        this.filtersDialogResultDisposable = activity.getFilterDialogSubject()
-                .doOnSubscribe { FiltersDialog().show(activity.supportFragmentManager, TAG) }
-                .subscribeBy(
-                        onNext = { fetchByFilter(it).subscribe(loadingObserver) },
-                        onError = { loadingObserver.onError(it) }
-                )
+        Completable.fromAction { FiltersDialog().show(activity.supportFragmentManager, TAG) }
+                .subscribeBy(onError = { loadingObserver.onError(it) })
     }
 
     private fun clearAll() {

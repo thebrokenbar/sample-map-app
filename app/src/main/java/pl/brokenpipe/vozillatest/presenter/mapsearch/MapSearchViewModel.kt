@@ -3,11 +3,12 @@ package pl.brokenpipe.vozillatest.presenter.mapsearch
 import android.arch.lifecycle.ViewModel
 import io.reactivex.Observable
 import io.reactivex.Single
+import io.reactivex.subjects.BehaviorSubject
+import io.reactivex.subjects.PublishSubject
 import pl.brokenpipe.vozillatest.arch.UseCase
 import pl.brokenpipe.vozillatest.arch.mapsearch.MapSearchPresenter
 import pl.brokenpipe.vozillatest.interactor.model.*
 import pl.brokenpipe.vozillatest.constant.ResourceTypes
-import pl.brokenpipe.vozillatest.interactor.GetFilterStatuses
 import pl.brokenpipe.vozillatest.view.filters.model.FilterItem
 import pl.brokenpipe.vozillatest.view.mapsearch.model.MapColor
 import pl.brokenpipe.vozillatest.view.mapsearch.model.Marker
@@ -31,7 +32,6 @@ class MapSearchViewModel(
 ) : ViewModel(), MapSearchPresenter {
 
     companion object {
-
         val CLUSTER_TYPES_COLORS = hashMapOf(
                 Pair(ResourceTypes.VEHICLE, MapColor.GreenColor()),
                 Pair(ResourceTypes.CHARGER, MapColor.YellowColor()),
@@ -46,8 +46,20 @@ class MapSearchViewModel(
     private val defaultSearchFilter = SearchFilter(listOf(ResourceTypes.VEHICLE,
             ResourceTypes.PARKING, ResourceTypes.CHARGER, ResourceTypes.POI, ResourceTypes.ZONE))
 
+    private val searchFilterSubject: BehaviorSubject<SearchFilter> = BehaviorSubject.create()
     private var searchFilter: SearchFilter = defaultSearchFilter
 
+    init {
+        searchFilterSubject.onNext(searchFilter)
+    }
+
+    override fun setSearchFilter(searchFilter: SearchFilter): Single<SearchFilter> {
+        return Single.fromCallable{
+            this.searchFilter = searchFilter
+            searchFilterSubject.onNext(searchFilter)
+            return@fromCallable searchFilter
+        }
+    }
 
     override fun getMarkersGroup(): Single<List<MarkersGroup>> {
         return getClusterTypes.execute()
@@ -57,8 +69,8 @@ class MapSearchViewModel(
                 .doOnSuccess { markersGroupCache = it }
     }
 
-    override fun getSearchFilter(): Single<SearchFilter> {
-        return Single.just(searchFilter)
+    override fun getSearchFilter(): Observable<SearchFilter> {
+        return searchFilterSubject
     }
 
     override fun fetchVehicleModelsToFilter(): Single<List<FilterItem>> {
@@ -89,8 +101,7 @@ class MapSearchViewModel(
     private fun getMapColor(clusterTypeId: String) =
             CLUSTER_TYPES_COLORS.getOrElse(clusterTypeId) { DEFAULT_CLUSTER_COLOR }
 
-    override fun fetchMapObjects(searchFilter: SearchFilter): Single<Map<MarkersGroup, List<Marker>>> {
-        this.searchFilter = searchFilter
+    override fun fetchMarkers(): Single<Map<MarkersGroup, List<Marker>>> {
         return Single.defer {
             val mapObjectsFilter = buildMapObjectsFilter(searchFilter)
 

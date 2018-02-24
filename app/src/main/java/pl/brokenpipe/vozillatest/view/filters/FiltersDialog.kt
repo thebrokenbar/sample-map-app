@@ -30,24 +30,9 @@ class FiltersDialog : DialogFragment() {
     @Inject
     protected lateinit var presenter: MapSearchPresenter
 
-    private lateinit var dialogSubject: PublishSubject<SearchFilter>
-
     private lateinit var rootView: View
 
     private lateinit var mapsActivity: MapsActivity
-
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-
-        try {
-            val dialogObservable = context as FiltersDialogObservable
-            this.dialogSubject = dialogObservable.getFilterDialogSubject()
-        } catch (e: ClassCastException) {
-            Toast.makeText(context, "Error, check logs", Toast.LENGTH_SHORT).show()
-            this.dismiss()
-            Timber.e(e)
-        }
-    }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         mapsActivity = context as MapsActivity? ?: throw IllegalStateException("There is no context here...")
@@ -73,6 +58,7 @@ class FiltersDialog : DialogFragment() {
     }
 
     private fun loadFilters() = presenter.getSearchFilter()
+            .firstOrError()
             .doOnSuccess { setFilters(it) }
 
     private fun attachAdapters(): Single<SubFilterAdapter> {
@@ -151,7 +137,8 @@ class FiltersDialog : DialogFragment() {
 
         val searchFilter = SearchFilter(objectTypes, selectedStatus.id, selectedModel.id)
 
-        dialogSubject.onNext(searchFilter)
+        presenter.setSearchFilter(searchFilter).subscribeBy(onError = { showError(it) })
+
         dialogInterface.dismiss()
     }
 }
