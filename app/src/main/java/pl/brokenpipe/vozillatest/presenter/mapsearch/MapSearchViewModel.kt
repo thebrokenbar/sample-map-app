@@ -25,6 +25,7 @@ class MapSearchViewModel(
         private val getZones: UseCase<String, List<ZoneModel>>,
         private val markerBuilder: MarkerBuilder
 ) : ViewModel(), MapSearchPresenter {
+
     companion object {
 
         val CLUSTER_TYPES_COLORS = hashMapOf(
@@ -38,12 +39,22 @@ class MapSearchViewModel(
 
     private lateinit var markersGroupCache: List<MarkersGroup>
 
+    private val defaultSearchFilter = SearchFilter(listOf(ResourceTypes.VEHICLE,
+            ResourceTypes.PARKING, ResourceTypes.CHARGER, ResourceTypes.POI, ResourceTypes.ZONE))
+
+    private var searchFilter: SearchFilter = defaultSearchFilter
+
+
     override fun getMarkersGroup(): Single<List<MarkersGroup>> {
         return getClusterTypes.execute()
                 .flatMap { Observable.fromIterable(it) }
                 .map { parseClusterTypeToMarkersGroup(it) }
                 .toList()
                 .doOnSuccess { markersGroupCache = it }
+    }
+
+    override fun getSearchFilter(): Single<SearchFilter> {
+        return Single.just(searchFilter)
     }
 
     private fun parseClusterTypeToMarkersGroup(clusterType: ClusterType): MarkersGroup {
@@ -55,9 +66,8 @@ class MapSearchViewModel(
             CLUSTER_TYPES_COLORS.getOrElse(clusterTypeId) { DEFAULT_CLUSTER_COLOR }
 
     override fun fetchMapObjects(searchFilter: SearchFilter): Single<Map<MarkersGroup, List<Marker>>> {
-
+        this.searchFilter = searchFilter
         return Single.defer {
-
             val mapObjectsFilter = buildMapObjectsFilter(searchFilter)
 
             val vehicleObservable = if (mapObjectsFilter.getVehicles) {
@@ -78,7 +88,7 @@ class MapSearchViewModel(
                 Observable.just(hashMapOf())
             }
 
-            val poiObservable = if (mapObjectsFilter.getChargers) {
+            val poiObservable = if (mapObjectsFilter.getPois) {
                 preparePoiObservable()
             } else {
                 Observable.just(hashMapOf())

@@ -12,6 +12,10 @@ kapt {
     generateStubs = true
 }
 
+androidExtensions {
+    experimental = true
+}
+
 android {
     compileSdkVersion 27
     defaultConfig {
@@ -28,10 +32,6 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
-    }
-
-    dataBinding {
-        enabled true
     }
 }
 ext {

@@ -6,6 +6,4 @@ import pl.brokenpipe.vozillatest.arch.View
 /**
  * Created by gwierzchanowski on 20.02.2018.
  */
-interface MapView : View, OnMapReadyCallback {
-
-}
+interface MapView : View, OnMapReadyCallback

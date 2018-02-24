@@ -15,6 +15,12 @@ import pl.brokenpipe.vozillatest.view.mapsearch.MapSearchView
 class MapsActivityModule(private val mapsActivity: MapsActivity) {
     @Provides
     @ActivityScope
+    fun provideActivity(): MapsActivity {
+        return mapsActivity
+    }
+
+    @Provides
+    @ActivityScope
     fun provideMapView(mapSearchViewModel: MapSearchPresenter): MapView {
         return MapSearchView(mapsActivity, mapSearchViewModel)
     }

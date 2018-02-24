@@ -40,11 +40,10 @@ class MarkerBuilder {
     }
 
     fun buildMarker(vehicleModel: VehicleModel): Marker {
-
         return Marker(
                 LatLng(vehicleModel.location.lat, vehicleModel.location.lon),
+                "",
                 vehicleModel.name,
-                vehicleModel.rangeKm.toString(),
                 getStatusColor(vehicleModel.status),
                 MarkerInfo.VehicleInfo(
                         vehicleModel.rangeKm.toString(),

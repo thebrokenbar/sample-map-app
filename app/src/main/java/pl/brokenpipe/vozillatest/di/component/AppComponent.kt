@@ -9,7 +9,7 @@ import javax.inject.Singleton
  * Created by gwierzchanowski on 20.02.2018.
  */
 @Singleton
-@Component(modules = [AppModule::class, UseCaseModule::class, PresenterModule::class,
+@Component(modules = [AppModule::class, UseCaseModule::class,
     RepositoryModule::class, CacheModule::class, ApiModule::class])
 interface AppComponent {
     fun inject(app: VozillaApplication)

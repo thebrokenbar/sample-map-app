@@ -1,15 +1,17 @@
 package pl.brokenpipe.vozillatest.view.mapsearch
 
+import android.os.Bundle
 import android.view.View
 import android.widget.Toast
-import com.google.android.gms.maps.CameraUpdate
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.PolygonOptions
+import io.reactivex.Single
 import io.reactivex.SingleObserver
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
+import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_maps.*
 import pl.brokenpipe.vozillatest.R
@@ -17,6 +19,7 @@ import pl.brokenpipe.vozillatest.view.MapsActivity
 import pl.brokenpipe.vozillatest.di.module.MapViewModule
 import pl.brokenpipe.vozillatest.arch.mapsearch.MapSearchPresenter
 import pl.brokenpipe.vozillatest.arch.mapsearch.MapView
+import pl.brokenpipe.vozillatest.view.filters.FiltersDialog
 import pl.brokenpipe.vozillatest.view.mapsearch.model.MarkersGroup
 import pl.brokenpipe.vozillatest.view.mapsearch.cluster.ClusterOrchestrator
 import pl.brokenpipe.vozillatest.view.mapsearch.model.Marker
@@ -32,26 +35,43 @@ import javax.inject.Inject
 class MapSearchView(mapsActivity: MapsActivity,
                     private val presenter: MapSearchPresenter) : MapView {
 
-    private val activityRef = WeakReference(mapsActivity)
-
-    private val mapCenterBoundariesPadding = mapsActivity.resources.getDimension(R.dimen.mapCenterBoundariesPadding)
+    companion object {
+        const val TAG = "MapSearchView"
+    }
 
     @Inject
     lateinit var clusterOrchestrator: ClusterOrchestrator
 
+    private val activityRef = WeakReference(mapsActivity)
+
+    private val mapCenterBoundariesPadding = mapsActivity.resources.getDimension(R.dimen.mapCenterBoundariesPadding)
+
+    private val activity
+        get() = activityRef.get() ?: throw IllegalStateException("Context is lost")
+
     private lateinit var googleMap: GoogleMap
+
+    init {
+        activity.filterButton.setOnClickListener { showFiltersDialog() }
+        activity.refreshButton.setOnClickListener { refresh() }
+    }
 
     override fun onMapReady(googleMap: GoogleMap) {
         this.googleMap = googleMap
-        val activity = activityRef.get() ?: throw IllegalStateException("Context is lost")
 
         activity.activityComponent
                 .plus(MapViewModule(activityRef, this.googleMap))
                 .inject(this)
 
-        configureClusters()
-
         this.googleMap.setOnCameraIdleListener(clusterOrchestrator)
+
+        refresh()
+    }
+
+    private fun refresh() {
+        presenter.getSearchFilter()
+                .flatMap { fetchByFilter(it) }
+                .subscribe(loadingObserver())
     }
 
     private fun addAllMarkers(markersGroupMap: Map<MarkersGroup, List<Marker>>) {
@@ -60,38 +80,41 @@ class MapSearchView(mapsActivity: MapsActivity,
                 addMarker(cluster.key, it)
             }
         }
+        clusterOrchestrator.clusterAll()
     }
 
-    private fun configureClusters() {
-        presenter.getMarkersGroup()
+    private fun fetchByFilter(searchFilter: SearchFilter): Single<Map<MarkersGroup, List<Marker>>> {
+        return presenter.getMarkersGroup()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnSuccess { clusterOrchestrator.initialize(it) }
                 .observeOn(Schedulers.io())
-                .flatMap { presenter.fetchMapObjects(getSearchFilter()) }
+                .flatMap { presenter.fetchMapObjects(searchFilter) }
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnSuccess {
                     centerMapOnAllMarkers(it)
                     addAllMarkers(it)
                 }
-                .subscribe(loadingObserver())
+
     }
 
     private fun centerMapOnAllMarkers(markers: Map<MarkersGroup, List<Marker>>) {
-        val allMarkers = mutableListOf<Marker>()
-        markers.forEach { group ->
-            group.value.forEach {
-                allMarkers.add(it)
+        if (markers.isNotEmpty()) {
+            val allMarkers = mutableListOf<Marker>()
+            markers.forEach { group ->
+                group.value.forEach {
+                    allMarkers.add(it)
+                }
             }
-        }
 
-        val boundsBuilder = LatLngBounds.builder()
-        allMarkers.forEach {
-            boundsBuilder.include(it.position)
-        }
+            val boundsBuilder = LatLngBounds.builder()
+            allMarkers.forEach {
+                boundsBuilder.include(it.position)
+            }
 
-        googleMap.moveCamera(CameraUpdateFactory.newLatLngBounds(boundsBuilder.build(),
-                mapCenterBoundariesPadding.toInt()))
+            googleMap.moveCamera(CameraUpdateFactory.newLatLngBounds(boundsBuilder.build(),
+                    mapCenterBoundariesPadding.toInt()))
+        }
     }
 
     private fun releaseLoadingState() {
@@ -121,6 +144,7 @@ class MapSearchView(mapsActivity: MapsActivity,
         }
 
         override fun onSubscribe(d: Disposable) {
+            clearAll()
             startLoadingState()
         }
 
@@ -129,10 +153,32 @@ class MapSearchView(mapsActivity: MapsActivity,
             Toast.makeText(activityRef.get(), "Something went wrong :(", Toast.LENGTH_SHORT).show()
             releaseLoadingState()
         }
-
     }
 
-    //MOCK TODO
-    private fun getSearchFilter() = SearchFilter(listOf("VEHICLE", "PARKING", "CHARGER", "POI"))
+    private fun showFiltersDialog() {
+        presenter.getSearchFilter()
+                .doOnSuccess {
+                    val filtersDialog = FiltersDialog()
+                    filtersDialog.arguments = Bundle()
+                            .apply { putParcelable(FiltersDialog.SEARCH_FILTER_ARG, it) }
+                    filtersDialog.show(activity.supportFragmentManager, TAG)
+                }
+                .flatMapMaybe { activity.getFilterDialogSubject() }
+                .subscribeBy(
+                        onSuccess = {
+                            fetchByFilter(it)
+                                    .subscribe(loadingObserver())
+                        },
+                        onError = {
+                            Toast.makeText(activity, "Could not load saved filter",
+                                    Toast.LENGTH_SHORT).show()
+                            Timber.e(it)
+                        })
+    }
+
+    private fun clearAll() {
+        clusterOrchestrator.clearAllMarkers()
+        googleMap.clear()
+    }
 
 }

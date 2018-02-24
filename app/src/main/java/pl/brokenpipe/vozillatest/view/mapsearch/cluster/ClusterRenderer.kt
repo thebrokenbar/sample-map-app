@@ -51,7 +51,7 @@ class ClusterRenderer(
                 ?: iconGenerator
                         .apply { setColor(getColorFromMarker(item)) }
                         .makeIcon(item.name)
-                        .apply { markerIconsCache[item.name] = this }
+                        .apply { markerIconsCache["${item.color.colorResId}${item.name}"] = this }
 
         markerOptions.icon(BitmapDescriptorFactory.fromBitmap(icon))
     }

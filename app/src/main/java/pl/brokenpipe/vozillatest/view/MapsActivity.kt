@@ -16,13 +16,12 @@ import javax.inject.Inject
 class MapsActivity : AppCompatActivity(), FiltersDialogObservable {
 
     @Inject
-    protected lateinit var filterDialogSubject: MaybeSubject<SearchFilter>
-
-    @Inject
     lateinit var mapView: MapView
 
     lateinit var activityComponent: ActivityComponent
         private set
+
+    private var filterDialogMaybeSubject = MaybeSubject.create<SearchFilter>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,11 +32,17 @@ class MapsActivity : AppCompatActivity(), FiltersDialogObservable {
 
         activityComponent.inject(this)
 
+
         val mapFragment = supportFragmentManager
                 .findFragmentById(R.id.map) as SupportMapFragment
 
         mapFragment.getMapAsync(mapView)
     }
 
-    override fun getSubject() = filterDialogSubject
+    override fun getFilterDialogSubject(): MaybeSubject<SearchFilter> {
+        if(filterDialogMaybeSubject.hasValue()) {
+            filterDialogMaybeSubject = MaybeSubject.create<SearchFilter>()
+        }
+        return filterDialogMaybeSubject
+    }
 }
