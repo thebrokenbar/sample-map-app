@@ -3,6 +3,7 @@ package pl.brokenpipe.vozillatest.di.component
 import dagger.Subcomponent
 import pl.brokenpipe.vozillatest.di.module.MapViewModule
 import pl.brokenpipe.vozillatest.di.scope.ViewScope
+import pl.brokenpipe.vozillatest.view.filters.FiltersDialog
 import pl.brokenpipe.vozillatest.view.mapsearch.MapSearchView
 
 /**

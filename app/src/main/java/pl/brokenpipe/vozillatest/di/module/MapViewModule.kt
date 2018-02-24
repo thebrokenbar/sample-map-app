@@ -13,20 +13,17 @@ import java.lang.ref.WeakReference
  * Created by gwierzchanowski on 20.02.2018.
  */
 @Module
-class MapViewModule(private val activityRef: WeakReference<MapsActivity>,
-                    private val googleMap: GoogleMap) {
-
-    private val activity: MapsActivity
-        get() = activityRef.get() ?: throw IllegalStateException("Context is lost")
+class MapViewModule(private val googleMap: GoogleMap) {
 
     @Provides
     @ViewScope
-    fun provideIconGenerator(): IconGenerator {
+    fun provideIconGenerator(activity: MapsActivity): IconGenerator {
         return IconGenerator(activity)
     }
 
     @Provides
-    fun provideClusterOrchestrator(iconGenerator: IconGenerator): ClusterOrchestrator {
+    fun provideClusterOrchestrator(activity: MapsActivity, iconGenerator: IconGenerator
+    ): ClusterOrchestrator {
         return ClusterOrchestrator(activity, googleMap, iconGenerator)
 
     }

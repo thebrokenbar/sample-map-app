@@ -8,7 +8,8 @@ import pl.brokenpipe.vozillatest.arch.UseCase
 import pl.brokenpipe.vozillatest.interactor.*
 import pl.brokenpipe.vozillatest.interactor.model.*
 import pl.brokenpipe.vozillatest.repository.map.specification.MapSpecification
-import pl.brokenpipe.vozillatest.repository.map.specification.VehicleSpecification
+import pl.brokenpipe.vozillatest.repository.mapfilter.specification.MapFiltersSpecification
+import javax.inject.Named
 import javax.inject.Singleton
 
 /**
@@ -19,8 +20,10 @@ class UseCaseModule {
 
     @Provides
     @Singleton
-    fun provideGetClusterTypesUseCase(): UseCase<@JvmWildcard Unit, @JvmWildcard List<ClusterType>> {
-        return GetClusterTypes()
+    fun provideGetClusterTypesUseCase(
+            mapFiltersRepository: Repository<Map<String, Map<String, String>>, MapFiltersSpecification>
+    ): UseCase<@JvmWildcard Unit, @JvmWildcard List<ClusterType>> {
+        return GetClusterTypes(mapFiltersRepository)
     }
 
     @Provides
@@ -71,5 +74,23 @@ class UseCaseModule {
     ): UseCase<@JvmWildcard MapObjectsFilter, @JvmWildcard Unit> {
         return RefreshMapObjects(mapObjectsRepository, vehicleCache, parkingCache,
                 chargerCache, poiCache, zoneCache)
+    }
+
+    @Provides
+    @Singleton
+    @Named("GetFilterModels")
+    fun provideGetFilterModelsUseCase(
+            mapFiltersRepository: Repository<Map<String, Map<String, String>>, MapFiltersSpecification>
+    ): UseCase<@JvmWildcard Unit, @JvmWildcard List<Pair<String, String>>> {
+        return GetFilterModels(mapFiltersRepository)
+    }
+
+    @Provides
+    @Singleton
+    @Named("GetFilterStatuses")
+    fun provideGetFilterStatusesUseCase(
+            mapFiltersRepository: Repository<Map<String, Map<String, String>>, MapFiltersSpecification>
+    ): UseCase<@JvmWildcard Unit, @JvmWildcard List<Pair<String, String>>> {
+        return GetFilterStatuses(mapFiltersRepository)
     }
 }

@@ -158,11 +158,11 @@ class RefreshMapObjects(
     }
 
     private fun buildAddress(mapAddress: MapAddress?): String {
-        return "${mapAddress?.city} ${mapAddress?.street} ${mapAddress?.house}"
+        return "${mapAddress?.city} ${mapAddress?.street} ${mapAddress?.house ?: ""}"
     }
 
     private fun buildVehicleStatus(status: Vehicle.StatusEnum): VehicleStatus {
-        return when(status) {
+        return when (status) {
             Vehicle.StatusEnum.AVAILABLE -> VehicleStatus.Available()
             Vehicle.StatusEnum.RENTED -> VehicleStatus.Rented()
             Vehicle.StatusEnum.RESERVED -> VehicleStatus.Reserved()

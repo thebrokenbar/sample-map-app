@@ -6,6 +6,7 @@ import pl.brokenpipe.vozillatest.di.module.MapViewModule
 import pl.brokenpipe.vozillatest.di.module.MapsActivityModule
 import pl.brokenpipe.vozillatest.di.module.PresenterModule
 import pl.brokenpipe.vozillatest.di.scope.ActivityScope
+import pl.brokenpipe.vozillatest.view.filters.FiltersDialog
 
 /**
  * Created by gwierzchanowski on 20.02.2018.
@@ -14,5 +15,6 @@ import pl.brokenpipe.vozillatest.di.scope.ActivityScope
 @ActivityScope
 interface ActivityComponent {
     fun inject(mapsActivity: MapsActivity)
+    fun inject(filtersDialog: FiltersDialog)
     fun plus(mapViewModule: MapViewModule): MapViewComponent
 }

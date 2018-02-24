@@ -13,7 +13,6 @@ import pl.brokenpipe.vozillatest.presenter.mapsearch.MapSearchViewModel
 import pl.brokenpipe.vozillatest.presenter.mapsearch.MarkerBuilder
 import pl.brokenpipe.vozillatest.view.MapsActivity
 import javax.inject.Named
-import javax.inject.Singleton
 
 /**
  * Created by gwierzchanowski on 23.02.2018.
@@ -28,7 +27,8 @@ class PresenterModule {
     @Provides
     fun provideMapSearchPresenter(
             activity: MapsActivity,
-            @Named("MapSearchPresenter") factory: ViewModelProvider.Factory
+            @Named("MapSearchPresenter")
+            factory: ViewModelProvider.Factory
     ): MapSearchPresenter {
         return ViewModelProviders.of(activity, factory)[MapSearchViewModel::class.java]
     }
@@ -44,11 +44,15 @@ class PresenterModule {
             getChargers: UseCase<String, List<ChargerModel>>,
             getPois: UseCase<String, List<PoiModel>>,
             getZones: UseCase<String, List<ZoneModel>>,
-            markerBuilder: MarkerBuilder): ViewModelProvider.Factory {
+            markerBuilder: MarkerBuilder,
+            @Named("GetFilterModels")
+            getFilterModels: UseCase<Unit, List<Pair<String, String>>>,
+            @Named("GetFilterStatuses")
+            getFilterStatuses: UseCase<Unit, List<Pair<String, String>>>): ViewModelProvider.Factory {
 
         return ViewModelFactory {
             MapSearchViewModel(getClusterTypes, refreshMapObjects, getVehicles, getParkings,
-                    getChargers, getPois, getZones, markerBuilder)
+                    getChargers, getPois, getZones, markerBuilder, getFilterModels, getFilterStatuses)
         }
 
     }

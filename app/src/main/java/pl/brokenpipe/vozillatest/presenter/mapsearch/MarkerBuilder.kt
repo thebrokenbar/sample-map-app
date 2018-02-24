@@ -43,7 +43,7 @@ class MarkerBuilder {
         return Marker(
                 LatLng(vehicleModel.location.lat, vehicleModel.location.lon),
                 "",
-                vehicleModel.name,
+                "",
                 getStatusColor(vehicleModel.status),
                 MarkerInfo.VehicleInfo(
                         vehicleModel.rangeKm.toString(),

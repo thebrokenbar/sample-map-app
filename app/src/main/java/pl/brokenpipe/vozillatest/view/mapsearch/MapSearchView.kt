@@ -1,6 +1,5 @@
 package pl.brokenpipe.vozillatest.view.mapsearch
 
-import android.os.Bundle
 import android.view.View
 import android.widget.Toast
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -15,14 +14,14 @@ import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_maps.*
 import pl.brokenpipe.vozillatest.R
-import pl.brokenpipe.vozillatest.view.MapsActivity
-import pl.brokenpipe.vozillatest.di.module.MapViewModule
 import pl.brokenpipe.vozillatest.arch.mapsearch.MapSearchPresenter
 import pl.brokenpipe.vozillatest.arch.mapsearch.MapView
+import pl.brokenpipe.vozillatest.di.module.MapViewModule
+import pl.brokenpipe.vozillatest.view.MapsActivity
 import pl.brokenpipe.vozillatest.view.filters.FiltersDialog
-import pl.brokenpipe.vozillatest.view.mapsearch.model.MarkersGroup
 import pl.brokenpipe.vozillatest.view.mapsearch.cluster.ClusterOrchestrator
 import pl.brokenpipe.vozillatest.view.mapsearch.model.Marker
+import pl.brokenpipe.vozillatest.view.mapsearch.model.MarkersGroup
 import pl.brokenpipe.vozillatest.view.mapsearch.model.SearchFilter
 import pl.brokenpipe.vozillatest.view.mapsearch.model.Zone
 import timber.log.Timber
@@ -51,6 +50,25 @@ class MapSearchView(mapsActivity: MapsActivity,
 
     private lateinit var googleMap: GoogleMap
 
+    private var filtersDialogResultDisposable: Disposable? = null
+
+    private val loadingObserver = object : SingleObserver<Any> {
+        override fun onSuccess(t: Any) {
+            releaseLoadingState()
+        }
+
+        override fun onSubscribe(d: Disposable) {
+            clearAll()
+            startLoadingState()
+        }
+
+        override fun onError(e: Throwable) {
+            Timber.e(e)
+            Toast.makeText(activityRef.get(), "Something went wrong :(", Toast.LENGTH_SHORT).show()
+            releaseLoadingState()
+        }
+    }
+
     init {
         activity.filterButton.setOnClickListener { showFiltersDialog() }
         activity.refreshButton.setOnClickListener { refresh() }
@@ -60,7 +78,7 @@ class MapSearchView(mapsActivity: MapsActivity,
         this.googleMap = googleMap
 
         activity.activityComponent
-                .plus(MapViewModule(activityRef, this.googleMap))
+                .plus(MapViewModule(this.googleMap))
                 .inject(this)
 
         this.googleMap.setOnCameraIdleListener(clusterOrchestrator)
@@ -71,7 +89,7 @@ class MapSearchView(mapsActivity: MapsActivity,
     private fun refresh() {
         presenter.getSearchFilter()
                 .flatMap { fetchByFilter(it) }
-                .subscribe(loadingObserver())
+                .subscribe(loadingObserver)
     }
 
     private fun addAllMarkers(markersGroupMap: Map<MarkersGroup, List<Marker>>) {
@@ -92,14 +110,14 @@ class MapSearchView(mapsActivity: MapsActivity,
                 .flatMap { presenter.fetchMapObjects(searchFilter) }
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnSuccess {
-                    centerMapOnAllMarkers(it)
                     addAllMarkers(it)
+                    centerMapOnAllMarkers(it)
                 }
 
     }
 
     private fun centerMapOnAllMarkers(markers: Map<MarkersGroup, List<Marker>>) {
-        if (markers.isNotEmpty()) {
+        if (markers.any { it.value.isNotEmpty() }) {
             val allMarkers = mutableListOf<Marker>()
             markers.forEach { group ->
                 group.value.forEach {
@@ -138,42 +156,17 @@ class MapSearchView(mapsActivity: MapsActivity,
         clusterOrchestrator.add(clusterType, marker)
     }
 
-    private fun loadingObserver() = object : SingleObserver<Any> {
-        override fun onSuccess(t: Any) {
-            releaseLoadingState()
-        }
-
-        override fun onSubscribe(d: Disposable) {
-            clearAll()
-            startLoadingState()
-        }
-
-        override fun onError(e: Throwable) {
-            Timber.e(e)
-            Toast.makeText(activityRef.get(), "Something went wrong :(", Toast.LENGTH_SHORT).show()
-            releaseLoadingState()
-        }
-    }
-
     private fun showFiltersDialog() {
-        presenter.getSearchFilter()
-                .doOnSuccess {
-                    val filtersDialog = FiltersDialog()
-                    filtersDialog.arguments = Bundle()
-                            .apply { putParcelable(FiltersDialog.SEARCH_FILTER_ARG, it) }
-                    filtersDialog.show(activity.supportFragmentManager, TAG)
-                }
-                .flatMapMaybe { activity.getFilterDialogSubject() }
+        if(filtersDialogResultDisposable?.isDisposed == false) {
+            filtersDialogResultDisposable?.dispose()
+        }
+
+        this.filtersDialogResultDisposable = activity.getFilterDialogSubject()
+                .doOnSubscribe { FiltersDialog().show(activity.supportFragmentManager, TAG) }
                 .subscribeBy(
-                        onSuccess = {
-                            fetchByFilter(it)
-                                    .subscribe(loadingObserver())
-                        },
-                        onError = {
-                            Toast.makeText(activity, "Could not load saved filter",
-                                    Toast.LENGTH_SHORT).show()
-                            Timber.e(it)
-                        })
+                        onNext = { fetchByFilter(it).subscribe(loadingObserver) },
+                        onError = { loadingObserver.onError(it) }
+                )
     }
 
     private fun clearAll() {

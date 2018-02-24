@@ -8,7 +8,7 @@ sealed class MarkerInfo {
             private var rangeKm: String,
             var name: String,
             var platesNumber: String,
-            var reservationEnd: String,
+            var reservationEnd: String?,
             var batteryLevelPct: Int,
             var picture: String
     ): MarkerInfo()

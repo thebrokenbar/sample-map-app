@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import com.google.android.gms.maps.SupportMapFragment
 import io.reactivex.subjects.MaybeSubject
+import io.reactivex.subjects.PublishSubject
 import pl.brokenpipe.vozillatest.R
 import pl.brokenpipe.vozillatest.platform.VozillaApplication
 import pl.brokenpipe.vozillatest.di.component.ActivityComponent
@@ -21,7 +22,7 @@ class MapsActivity : AppCompatActivity(), FiltersDialogObservable {
     lateinit var activityComponent: ActivityComponent
         private set
 
-    private var filterDialogMaybeSubject = MaybeSubject.create<SearchFilter>()
+    private var filterDialogMaybeSubject = PublishSubject.create<SearchFilter>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,9 +40,9 @@ class MapsActivity : AppCompatActivity(), FiltersDialogObservable {
         mapFragment.getMapAsync(mapView)
     }
 
-    override fun getFilterDialogSubject(): MaybeSubject<SearchFilter> {
-        if(filterDialogMaybeSubject.hasValue()) {
-            filterDialogMaybeSubject = MaybeSubject.create<SearchFilter>()
+    override fun getFilterDialogSubject(): PublishSubject<SearchFilter> {
+        if(filterDialogMaybeSubject.hasComplete()) {
+            filterDialogMaybeSubject = PublishSubject.create<SearchFilter>()
         }
         return filterDialogMaybeSubject
     }

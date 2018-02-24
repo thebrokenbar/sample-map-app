@@ -7,6 +7,8 @@ import pl.brokenpipe.vozillatest.arch.UseCase
 import pl.brokenpipe.vozillatest.arch.mapsearch.MapSearchPresenter
 import pl.brokenpipe.vozillatest.interactor.model.*
 import pl.brokenpipe.vozillatest.constant.ResourceTypes
+import pl.brokenpipe.vozillatest.interactor.GetFilterStatuses
+import pl.brokenpipe.vozillatest.view.filters.model.FilterItem
 import pl.brokenpipe.vozillatest.view.mapsearch.model.MapColor
 import pl.brokenpipe.vozillatest.view.mapsearch.model.Marker
 import pl.brokenpipe.vozillatest.view.mapsearch.model.MarkersGroup
@@ -23,7 +25,9 @@ class MapSearchViewModel(
         private val getChargers: UseCase<String, List<ChargerModel>>,
         private val getPois: UseCase<String, List<PoiModel>>,
         private val getZones: UseCase<String, List<ZoneModel>>,
-        private val markerBuilder: MarkerBuilder
+        private val markerBuilder: MarkerBuilder,
+        private val getFilterModels: UseCase<Unit, List<Pair<String, String>>>,
+        private val getFilterStatuses: UseCase<Unit, List<Pair<String, String>>>
 ) : ViewModel(), MapSearchPresenter {
 
     companion object {
@@ -55,6 +59,26 @@ class MapSearchViewModel(
 
     override fun getSearchFilter(): Single<SearchFilter> {
         return Single.just(searchFilter)
+    }
+
+    override fun fetchVehicleModelsToFilter(): Single<List<FilterItem>> {
+        return getFilterModels.execute()
+                .firstOrError()
+                .map {
+                    it.map { (first, second) ->
+                        FilterItem(second, first)
+                    }
+                }
+    }
+
+    override fun fetchVehicleStatusesToFilter(): Single<List<FilterItem>> {
+        return getFilterStatuses.execute()
+                .firstOrError()
+                .map {
+                    it.map { (first, second) ->
+                        FilterItem(second, first)
+                    }
+                }
     }
 
     private fun parseClusterTypeToMarkersGroup(clusterType: ClusterType): MarkersGroup {

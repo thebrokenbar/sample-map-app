@@ -11,14 +11,14 @@ data class Marker(
         val name: String,
         val description: String,
         val color: MapColor,
-        val markerInfo: MarkerInfo? = null): ClusterItem {
+        val markerInfo: MarkerInfo? = null) : ClusterItem {
 
-    override fun getSnippet(): String {
-        return description
+    override fun getSnippet(): String? {
+        return null
     }
 
-    override fun getTitle(): String {
-        return ""
+    override fun getTitle(): String? {
+        return if (description.isBlank()) null else description
     }
 
     override fun getPosition(): LatLng {
