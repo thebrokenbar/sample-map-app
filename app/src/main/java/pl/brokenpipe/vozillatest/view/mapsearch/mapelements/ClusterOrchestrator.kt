@@ -1,4 +1,4 @@
-package pl.brokenpipe.vozillatest.view.mapsearch.cluster
+package pl.brokenpipe.vozillatest.view.mapsearch.mapelements
 
 import android.content.Context
 import android.os.Build
@@ -46,11 +46,6 @@ class ClusterOrchestrator(context: Context,
         }
     }
 
-    fun cluster(markersGroup: MarkersGroup) {
-        clusterManagers[markersGroup]?.cluster()
-                ?: throw IllegalArgumentException("No markersGroup of id $markersGroup")
-    }
-
     fun add(markersGroup: MarkersGroup, marker: Marker) {
         clusterManagers[markersGroup]?.addItem(marker)
                 ?: throw IllegalArgumentException("No markersGroup of id $markersGroup")
@@ -67,10 +62,4 @@ class ClusterOrchestrator(context: Context,
             it.value.clearItems()
         }
     }
-
-    fun clearMarkers(markersGroup: MarkersGroup) {
-        clusterManagers[markersGroup]?.clearItems()
-                ?: throw IllegalArgumentException("No markersGroup of id $markersGroup")
-    }
-
 }

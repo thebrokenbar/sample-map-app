@@ -1,6 +1,5 @@
 package pl.brokenpipe.vozillatest.view.mapsearch.model
 
-import android.support.annotation.ColorRes
 import com.google.android.gms.maps.model.LatLng
 
 /**
@@ -8,6 +7,6 @@ import com.google.android.gms.maps.model.LatLng
  */
 data class Zone(
         val polygon: List<LatLng>,
-        @ColorRes val fillColor: Int,
-        @ColorRes val stokeColor: Int
+        val fillColor: MapColor,
+        val stokeColor: MapColor
 )

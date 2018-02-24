@@ -132,10 +132,10 @@ class FiltersDialog : DialogFragment() {
         if (rootView.filterPoiCheckbox.isChecked) objectTypes.add(ResourceTypes.POI)
         if (rootView.filterZoneCheckbox.isChecked) objectTypes.add(ResourceTypes.ZONE)
 
-        val selectedModel = rootView.filterVehicleModelSpinner.selectedItem as FilterItem
-        val selectedStatus = rootView.filterVehicleStatusSpinner.selectedItem as FilterItem
+        val selectedModel = rootView.filterVehicleModelSpinner.selectedItem as FilterItem?
+        val selectedStatus = rootView.filterVehicleStatusSpinner.selectedItem as FilterItem?
 
-        val searchFilter = SearchFilter(objectTypes, selectedStatus.id, selectedModel.id)
+        val searchFilter = SearchFilter(objectTypes, selectedStatus?.id, selectedModel?.id)
 
         presenter.setSearchFilter(searchFilter).subscribeBy(onError = { showError(it) })
 

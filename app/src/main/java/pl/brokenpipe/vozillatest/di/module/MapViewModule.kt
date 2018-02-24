@@ -6,8 +6,8 @@ import dagger.Module
 import dagger.Provides
 import pl.brokenpipe.vozillatest.view.MapsActivity
 import pl.brokenpipe.vozillatest.di.scope.ViewScope
-import pl.brokenpipe.vozillatest.view.mapsearch.cluster.ClusterOrchestrator
-import java.lang.ref.WeakReference
+import pl.brokenpipe.vozillatest.view.mapsearch.mapelements.ClusterOrchestrator
+import pl.brokenpipe.vozillatest.view.mapsearch.mapelements.ZoneOrchestrator
 
 /**
  * Created by gwierzchanowski on 20.02.2018.
@@ -26,5 +26,10 @@ class MapViewModule(private val googleMap: GoogleMap) {
     ): ClusterOrchestrator {
         return ClusterOrchestrator(activity, googleMap, iconGenerator)
 
+    }
+
+    @Provides
+    fun provideZoneOrchestrator(activity: MapsActivity): ZoneOrchestrator {
+        return ZoneOrchestrator(activity, googleMap)
     }
 }

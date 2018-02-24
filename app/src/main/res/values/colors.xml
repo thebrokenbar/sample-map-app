@@ -7,8 +7,9 @@
     <color name="mapRed">#d15151</color>
     <color name="mapBlue">#80b5de</color>
     <color name="mapGreen">#bfea8f</color>
-    <color name="mapBrown">#9b5543</color>
+    <color name="mapBrownTransparent">#889b5543</color>
     <color name="mapYellow">#f5e03f</color>
     <color name="mapOrange">#e78b45</color>
     <color name="mapWhite">#d7dada</color>
+    <color name="mapTransparent">#00ffffff</color>
 </resources>

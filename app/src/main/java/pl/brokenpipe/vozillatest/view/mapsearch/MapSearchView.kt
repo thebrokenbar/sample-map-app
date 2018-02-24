@@ -5,10 +5,9 @@ import android.widget.Toast
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.LatLngBounds
-import com.google.android.gms.maps.model.PolygonOptions
 import io.reactivex.Completable
+import io.reactivex.Observable
 import io.reactivex.Observer
-import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.rxkotlin.subscribeBy
@@ -20,7 +19,8 @@ import pl.brokenpipe.vozillatest.arch.mapsearch.MapView
 import pl.brokenpipe.vozillatest.di.module.MapViewModule
 import pl.brokenpipe.vozillatest.view.MapsActivity
 import pl.brokenpipe.vozillatest.view.filters.FiltersDialog
-import pl.brokenpipe.vozillatest.view.mapsearch.cluster.ClusterOrchestrator
+import pl.brokenpipe.vozillatest.view.mapsearch.mapelements.ClusterOrchestrator
+import pl.brokenpipe.vozillatest.view.mapsearch.mapelements.ZoneOrchestrator
 import pl.brokenpipe.vozillatest.view.mapsearch.model.Marker
 import pl.brokenpipe.vozillatest.view.mapsearch.model.MarkersGroup
 import pl.brokenpipe.vozillatest.view.mapsearch.model.Zone
@@ -41,6 +41,9 @@ class MapSearchView(mapsActivity: MapsActivity,
     @Inject
     lateinit var clusterOrchestrator: ClusterOrchestrator
 
+    @Inject
+    lateinit var zoneOrchestrator: ZoneOrchestrator
+
     private val activityRef = WeakReference(mapsActivity)
 
     private val mapCenterBoundariesPadding = mapsActivity.resources.getDimension(R.dimen.mapCenterBoundariesPadding)
@@ -52,27 +55,37 @@ class MapSearchView(mapsActivity: MapsActivity,
 
     private var filtersDialogResultDisposable: Disposable? = null
 
-    private val loadingObserver = object : Observer<Any> {
+    private val loadingObserver = object : Observer<Unit> {
         override fun onComplete() {
             Timber.d("Search Observer completed")
         }
 
-        override fun onNext(t: Any) {
+        override fun onNext(t: Unit) {
             releaseLoadingState()
         }
 
         override fun onSubscribe(d: Disposable) {}
 
         override fun onError(e: Throwable) {
-            Timber.e(e)
-            Toast.makeText(activityRef.get(), "Something went wrong :(", Toast.LENGTH_SHORT).show()
-            releaseLoadingState()
+            showError(e)
+            observeFilterChanges()
         }
+    }
+
+    private fun showError(e: Throwable) {
+        Timber.e(e)
+        Toast.makeText(activityRef.get(), "Something went wrong :(", Toast.LENGTH_SHORT).show()
+        releaseLoadingState()
     }
 
     init {
         activity.filterButton.setOnClickListener { showFiltersDialog() }
-        activity.refreshButton.setOnClickListener { observeFilterChanges() }
+        activity.refreshButton.setOnClickListener { manualRefresh() }
+    }
+
+    private fun manualRefresh() {
+        presenter.manualRefresh()
+                .subscribeBy(onError = { loadingObserver.onError(it) })
     }
 
     override fun onMapReady(googleMap: GoogleMap) {
@@ -85,6 +98,7 @@ class MapSearchView(mapsActivity: MapsActivity,
         this.googleMap.setOnCameraIdleListener(clusterOrchestrator)
 
         observeFilterChanges()
+        manualRefresh()
     }
 
     private fun addAllMarkers(markersGroupMap: Map<MarkersGroup, List<Marker>>) {
@@ -111,9 +125,17 @@ class MapSearchView(mapsActivity: MapsActivity,
                                 addAllMarkers(it)
                                 centerMapOnAllMarkers(it)
                             }
+                            .observeOn(Schedulers.io())
+                            .flatMap { presenter.getZones() }
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .doOnSuccess { addAllZones(it) }
+                            .map { Unit }
                 }
                 .subscribe(loadingObserver)
+    }
 
+    private fun addAllZones(zones: List<Zone>) {
+        zones.forEach { zoneOrchestrator.add(it) }
     }
 
     private fun centerMapOnAllMarkers(markers: Map<MarkersGroup, List<Marker>>) {
@@ -142,15 +164,6 @@ class MapSearchView(mapsActivity: MapsActivity,
     private fun startLoadingState() {
         clearAll()
         activityRef.get()?.mapLoadingProgressBar?.visibility = View.VISIBLE
-    }
-
-    private fun addZone(zone: Zone) {
-        val polygonOptions = PolygonOptions()
-                .addAll(zone.polygon)
-                .fillColor(zone.fillColor)
-                .strokeColor(zone.stokeColor)
-
-        googleMap.addPolygon(polygonOptions)
     }
 
     private fun addMarker(clusterType: MarkersGroup, marker: Marker) {

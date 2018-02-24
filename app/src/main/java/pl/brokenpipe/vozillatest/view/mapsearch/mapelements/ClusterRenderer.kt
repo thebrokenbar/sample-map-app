@@ -1,12 +1,10 @@
-package pl.brokenpipe.vozillatest.view.mapsearch.cluster
+package pl.brokenpipe.vozillatest.view.mapsearch.mapelements
 
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
-import android.graphics.drawable.LayerDrawable
 import android.graphics.drawable.ShapeDrawable
 import android.graphics.drawable.shapes.OvalShape
-import android.graphics.drawable.shapes.Shape
 import android.os.Build
 import android.support.v4.graphics.drawable.DrawableCompat
 import android.util.SparseArray
@@ -17,7 +15,7 @@ import com.google.maps.android.clustering.Cluster
 import com.google.maps.android.clustering.ClusterManager
 import com.google.maps.android.clustering.view.DefaultClusterRenderer
 import com.google.maps.android.ui.IconGenerator
-import pl.brokenpipe.vozillatest.R
+import pl.brokenpipe.vozillatest.view.extension.intColor
 import pl.brokenpipe.vozillatest.view.mapsearch.model.Marker
 import java.lang.ref.WeakReference
 
@@ -49,7 +47,7 @@ class ClusterRenderer(
     override fun onBeforeClusterItemRendered(item: Marker, markerOptions: MarkerOptions) {
         val icon = markerIconsCache[item.name]
                 ?: iconGenerator
-                        .apply { setColor(getColorFromMarker(item)) }
+                        .apply { setColor(item.color.intColor(contextRef.get())) }
                         .makeIcon(item.name)
                         .apply { markerIconsCache["${item.color.colorResId}${item.name}"] = this }
 
@@ -70,17 +68,6 @@ class ClusterRenderer(
         }
 
         markerOptions.icon(BitmapDescriptorFactory.fromBitmap(icon)).zIndex(10f)
-    }
-
-    private fun getColorFromMarker(item: Marker): Int {
-        return contextRef.get()?.let {
-            return@let if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                contextRef.get()?.getColor(item.color.colorResId)
-            } else {
-                @Suppress("DEPRECATION")
-                contextRef.get()?.resources?.getColor(item.color.colorResId)
-            }
-        } ?: throw IllegalStateException("Context is lost")
     }
 
     override fun shouldRenderAsCluster(cluster: Cluster<Marker>): Boolean {

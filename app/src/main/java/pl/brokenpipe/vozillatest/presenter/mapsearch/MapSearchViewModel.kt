@@ -1,19 +1,17 @@
 package pl.brokenpipe.vozillatest.presenter.mapsearch
 
 import android.arch.lifecycle.ViewModel
+import com.jakewharton.rxrelay2.BehaviorRelay
+import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.Single
-import io.reactivex.subjects.BehaviorSubject
 import io.reactivex.subjects.PublishSubject
 import pl.brokenpipe.vozillatest.arch.UseCase
 import pl.brokenpipe.vozillatest.arch.mapsearch.MapSearchPresenter
 import pl.brokenpipe.vozillatest.interactor.model.*
 import pl.brokenpipe.vozillatest.constant.ResourceTypes
 import pl.brokenpipe.vozillatest.view.filters.model.FilterItem
-import pl.brokenpipe.vozillatest.view.mapsearch.model.MapColor
-import pl.brokenpipe.vozillatest.view.mapsearch.model.Marker
-import pl.brokenpipe.vozillatest.view.mapsearch.model.MarkersGroup
-import pl.brokenpipe.vozillatest.view.mapsearch.model.SearchFilter
+import pl.brokenpipe.vozillatest.view.mapsearch.model.*
 
 /**
  * Created by gwierzchanowski on 20.02.2018.
@@ -27,6 +25,7 @@ class MapSearchViewModel(
         private val getPois: UseCase<String, List<PoiModel>>,
         private val getZones: UseCase<String, List<ZoneModel>>,
         private val markerBuilder: MarkerBuilder,
+        private val zoneBuilder: ZoneBuilder,
         private val getFilterModels: UseCase<Unit, List<Pair<String, String>>>,
         private val getFilterStatuses: UseCase<Unit, List<Pair<String, String>>>
 ) : ViewModel(), MapSearchPresenter {
@@ -46,19 +45,31 @@ class MapSearchViewModel(
     private val defaultSearchFilter = SearchFilter(listOf(ResourceTypes.VEHICLE,
             ResourceTypes.PARKING, ResourceTypes.CHARGER, ResourceTypes.POI, ResourceTypes.ZONE))
 
-    private val searchFilterSubject: BehaviorSubject<SearchFilter> = BehaviorSubject.create()
+    private val searchFilterRelay: PublishSubject<SearchFilter> = PublishSubject.create()
     private var searchFilter: SearchFilter = defaultSearchFilter
 
-    init {
-        searchFilterSubject.onNext(searchFilter)
-    }
-
     override fun setSearchFilter(searchFilter: SearchFilter): Single<SearchFilter> {
-        return Single.fromCallable{
+        return Single.fromCallable {
             this.searchFilter = searchFilter
-            searchFilterSubject.onNext(searchFilter)
+            searchFilterRelay.onNext(searchFilter)
             return@fromCallable searchFilter
         }
+    }
+
+    override fun getZones(): Single<List<Zone>> {
+        return getZones.execute()
+                .flatMap { Observable.fromIterable(it) }
+                .map {
+                    zoneBuilder.buildZones(it)
+                }
+                .toList()
+                .map { result ->
+                    mutableListOf<Zone>().also { zones ->
+                        result.forEach {
+                            zones.addAll(it)
+                        }
+                    }
+                }
     }
 
     override fun getMarkersGroup(): Single<List<MarkersGroup>> {
@@ -69,8 +80,12 @@ class MapSearchViewModel(
                 .doOnSuccess { markersGroupCache = it }
     }
 
+    override fun manualRefresh(): Completable {
+        return Completable.fromAction { searchFilterRelay.onNext(searchFilter) }
+    }
+
     override fun getSearchFilter(): Observable<SearchFilter> {
-        return searchFilterSubject
+        return searchFilterRelay
     }
 
     override fun fetchVehicleModelsToFilter(): Single<List<FilterItem>> {

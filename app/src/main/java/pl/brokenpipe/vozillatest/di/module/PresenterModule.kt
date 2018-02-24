@@ -11,6 +11,7 @@ import pl.brokenpipe.vozillatest.di.scope.ActivityScope
 import pl.brokenpipe.vozillatest.interactor.model.*
 import pl.brokenpipe.vozillatest.presenter.mapsearch.MapSearchViewModel
 import pl.brokenpipe.vozillatest.presenter.mapsearch.MarkerBuilder
+import pl.brokenpipe.vozillatest.presenter.mapsearch.ZoneBuilder
 import pl.brokenpipe.vozillatest.view.MapsActivity
 import javax.inject.Named
 
@@ -23,6 +24,10 @@ class PresenterModule {
     @Provides
     @ActivityScope
     fun provideMarkerBuilder() = MarkerBuilder()
+
+    @Provides
+    @ActivityScope
+    fun provideZoneBuilder() = ZoneBuilder()
 
     @Provides
     fun provideMapSearchPresenter(
@@ -45,6 +50,7 @@ class PresenterModule {
             getPois: UseCase<String, List<PoiModel>>,
             getZones: UseCase<String, List<ZoneModel>>,
             markerBuilder: MarkerBuilder,
+            zoneBuilder: ZoneBuilder,
             @Named("GetFilterModels")
             getFilterModels: UseCase<Unit, List<Pair<String, String>>>,
             @Named("GetFilterStatuses")
@@ -52,7 +58,7 @@ class PresenterModule {
 
         return ViewModelFactory {
             MapSearchViewModel(getClusterTypes, refreshMapObjects, getVehicles, getParkings,
-                    getChargers, getPois, getZones, markerBuilder, getFilterModels, getFilterStatuses)
+                    getChargers, getPois, getZones, markerBuilder, zoneBuilder,getFilterModels, getFilterStatuses)
         }
 
     }

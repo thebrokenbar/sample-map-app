@@ -13,6 +13,7 @@ ext {
     rxFirebaseDatabaseVer = '11.8.0.0'
     googleMapsUtilsVer = "0.5"
     daggerVer = '2.14.1'
+    rxRelayVer = '2.0.0'
 
     //tests
     jUnitVer = '4.12'
@@ -47,7 +48,8 @@ ext {
             //rxJava
             "io.reactivex.rxjava2:rxjava:$rxJavaVer",
             "io.reactivex.rxjava2:rxandroid:$rxAndroidVer",
-            "io.reactivex.rxjava2:rxkotlin:$rxKotlinVer"
+            "io.reactivex.rxjava2:rxkotlin:$rxKotlinVer",
+            "com.jakewharton.rxrelay2:rxrelay:$rxRelayVer"
     ]
 
     testImplementationDependencies = [
