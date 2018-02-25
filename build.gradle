@@ -18,7 +18,7 @@ buildscript {
         classpath "com.android.tools.build:gradle:$gradleVer"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVer"
         classpath "io.fabric.tools:gradle:$fabricVer"
-        classpath "com.google.gms:google-services:$googleServicesVer"
+        classpath 'com.google.gms:google-services:3.1.1'
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
@@ -29,6 +29,7 @@ allprojects {
     repositories {
         google()
         jcenter()
+        maven { url 'https://maven.fabric.io/public' }
     }
 }
 

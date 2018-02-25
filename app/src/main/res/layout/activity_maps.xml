@@ -19,6 +19,20 @@
         app:layout_anchorGravity="right|bottom" />
 
     <android.support.design.widget.FloatingActionButton
+        android:id="@+id/crashButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:layout_margin="16dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:src="@android:drawable/ic_delete"
+        app:fabSize="mini"
+        app:layout_anchor="@+id/map"
+        app:layout_anchorGravity="left|top" />
+
+    <android.support.design.widget.FloatingActionButton
         android:id="@+id/filterButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

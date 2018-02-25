@@ -8,6 +8,10 @@ import pl.brokenpipe.vozillatest.di.module.AppModule
 import pl.brokenpipe.vozillatest.view.databinding.BindingResourceMapper
 import timber.log.Timber
 import javax.inject.Inject
+import com.crashlytics.android.Crashlytics
+import io.fabric.sdk.android.Fabric
+
+
 
 /**
  * Created by gwierzchanowski on 20.02.2018.
@@ -21,12 +25,14 @@ class VozillaApplication : Application() {
 
     override fun onCreate() {
         super.onCreate()
+        Fabric.with(this, Crashlytics())
 
         appComponent = DaggerAppComponent.builder()
                 .appModule(AppModule())
                 .build()
 
         appComponent.inject(this)
+
 
         BindingResourceMapper.bindableResourceClass = BR::class
         Timber.plant(timberTree)

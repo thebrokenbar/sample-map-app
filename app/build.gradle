@@ -8,6 +8,8 @@ apply plugin: 'kotlin-kapt'
 
 apply from: 'jacoco.gradle'
 
+apply plugin: 'io.fabric'
+
 kapt {
     generateStubs = true
 }
@@ -38,26 +40,6 @@ android {
         enabled true
     }
 }
-ext {
-    //implementation & kapt
-    supportLibVer = '27.0.2'
-
-    architectureComponentsVer = '1.1.0'
-    androidKtxVer = '0.1'
-    dataBindingVer = '3.0.1'
-    googleApiVer = '11.8.0'
-    crashlyticsVer = '2.9.0'
-    rxJavaVer = '2.1.9'
-    rxAndroidVer = '2.0.1'
-    rxKotlinVer = '2.2.0'
-
-    //tests
-    jUnitVer = '4.12'
-    espressoVer = '3.0.1'
-    testRunnerVer = '1.0.1'
-    daggerVer = '2.14.1'
-
-}
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
@@ -73,3 +55,5 @@ dependencies {
 
     implementation project(':rest-client')
 }
+
+apply plugin: 'com.google.gms.google-services'

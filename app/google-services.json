@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "766783063255",
+    "firebase_url": "https://vozilla-test.firebaseio.com",
+    "project_id": "vozilla-test",
+    "storage_bucket": "vozilla-test.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:766783063255:android:dfe3342774c559d9",
+        "android_client_info": {
+          "package_name": "pl.brokenpipe.vozillatest"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "766783063255-pqpf0rlrhg8ccn7l4scjlo88r9qo3iqb.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "pl.brokenpipe.vozillatest",
+            "certificate_hash": "dbf0dbd37b3682febb13a20ac8d94fe122d5e41e"
+          }
+        },
+        {
+          "client_id": "766783063255-o1pvocdqa8hrknikcr35lu9krpjovm4s.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAhGG5XUKO-mGa8934wilEhPrq3dfVO1RM"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "766783063255-o1pvocdqa8hrknikcr35lu9krpjovm4s.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

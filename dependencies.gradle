@@ -1,7 +1,6 @@
 ext {
     //implementation & kapt
     supportLibVer = '27.0.2'
-    boundControllerVer = '0.2'
     architectureComponentsVer = '1.1.0'
     timberVer = '4.6.0'
     androidKtxVer = '0.1'
@@ -10,7 +9,6 @@ ext {
     rxJavaVer = '2.1.9'
     rxAndroidVer = '2.0.1'
     rxKotlinVer = '2.2.0'
-    rxFirebaseDatabaseVer = '11.8.0.0'
     googleMapsUtilsVer = "0.5"
     daggerVer = '2.14.1'
     constraintLayoutVer = '1.0.2'

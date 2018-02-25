@@ -28,12 +28,6 @@ class UseCaseModule {
 
     @Provides
     @Singleton
-    fun provideGetMapObjectsUseCase(): UseCase<@JvmWildcard List<String>, @JvmWildcard Map<ClusterType, List<MapObject>>> {
-        return GetMapObjects()
-    }
-
-    @Provides
-    @Singleton
     fun provideGetParkingsUseCase(cache: HashMap<String, ParkingModel>): UseCase<@JvmWildcard String, @JvmWildcard List<ParkingModel>> {
         return GetParkings(cache)
     }

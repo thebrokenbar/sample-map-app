@@ -2,7 +2,9 @@ package pl.brokenpipe.vozillatest.view
 
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import com.crashlytics.android.Crashlytics
 import com.google.android.gms.maps.SupportMapFragment
+import kotlinx.android.synthetic.main.activity_maps.*
 import pl.brokenpipe.vozillatest.R
 import pl.brokenpipe.vozillatest.platform.VozillaApplication
 import pl.brokenpipe.vozillatest.di.component.ActivityComponent
@@ -33,5 +35,10 @@ class MapsActivity : AppCompatActivity() {
                 .findFragmentById(R.id.map) as SupportMapFragment
 
         mapFragment.getMapAsync(mapView)
+
+        // crashtest
+        crashButton.setOnClickListener {
+            Crashlytics.getInstance().crash()
+        }
     }
 }
