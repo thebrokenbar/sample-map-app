@@ -19,7 +19,8 @@ interface MapSearchPresenter : Presenter {
     fun setSearchFilter(searchFilter: SearchFilter): Single<SearchFilter>
     fun getMarkersGroup(): Single<List<MarkersGroup>>
     fun fetchMarkers(): Single<Map<MarkersGroup, List<Marker>>>
-    fun getSearchFilter(): Observable<SearchFilter>
+    fun getSearchFilterImmediately(): Single<SearchFilter>
+    fun observeSearchFilterChanges(): Observable<SearchFilter>
     fun fetchVehicleModelsToFilter(): Single<List<FilterItem>>
     fun fetchVehicleStatusesToFilter(): Single<List<FilterItem>>
     fun getZones(): Single<List<Zone>>

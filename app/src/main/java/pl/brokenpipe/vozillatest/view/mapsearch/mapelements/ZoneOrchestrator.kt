@@ -3,7 +3,7 @@ package pl.brokenpipe.vozillatest.view.mapsearch.mapelements
 import android.content.Context
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.PolygonOptions
-import pl.brokenpipe.vozillatest.view.extension.intColor
+import pl.brokenpipe.vozillatest.view.intColor
 import pl.brokenpipe.vozillatest.view.mapsearch.model.Zone
 import java.lang.ref.WeakReference
 

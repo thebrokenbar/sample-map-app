@@ -6,6 +6,7 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.maps.android.clustering.ClusterManager
 import com.google.maps.android.ui.IconGenerator
 import pl.brokenpipe.vozillatest.view.mapsearch.model.Marker
+import pl.brokenpipe.vozillatest.view.mapsearch.model.MarkerInfo
 import pl.brokenpipe.vozillatest.view.mapsearch.model.MarkersGroup
 import java.lang.ref.WeakReference
 
@@ -16,11 +17,14 @@ import java.lang.ref.WeakReference
 class ClusterOrchestrator(context: Context,
                           private val googleMap: GoogleMap,
                           private val iconGenerator: IconGenerator
-) : GoogleMap.OnCameraIdleListener {
+) : GoogleMap.OnCameraIdleListener, ClusterManager.OnClusterItemClickListener<Marker>, GoogleMap.OnMarkerClickListener {
+
 
     private val contextRef = WeakReference(context)
 
     private val clusterManagers: HashMap<MarkersGroup, ClusterManager<Marker>> = hashMapOf()
+
+    var onItemClick: ((markerInfo: MarkerInfo?) -> Unit)? = null
 
     fun initialize(configs: List<MarkersGroup>) {
         val context = contextRef.get() ?: throw IllegalStateException("Context is lost")
@@ -36,8 +40,22 @@ class ClusterOrchestrator(context: Context,
                         }
                         renderer = ClusterRenderer(context, googleMap, this,
                                 iconGenerator, clusterColor)
+                        this.setOnClusterItemClickListener(this@ClusterOrchestrator)
                     }
         }
+        googleMap.setOnMarkerClickListener(this)
+    }
+
+    override fun onMarkerClick(marker: com.google.android.gms.maps.model.Marker?): Boolean {
+        clusterManagers.forEach { (_, value) ->
+            value.onMarkerClick(marker)
+        }
+        return false
+    }
+
+    override fun onClusterItemClick(marker: Marker): Boolean {
+        onItemClick?.invoke(marker.markerInfo)
+        return true
     }
 
     fun clusterAll() {

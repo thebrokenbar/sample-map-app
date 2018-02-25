@@ -1,7 +1,6 @@
 package pl.brokenpipe.vozillatest.presenter.mapsearch
 
 import android.arch.lifecycle.ViewModel
-import com.jakewharton.rxrelay2.BehaviorRelay
 import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.Single
@@ -45,13 +44,13 @@ class MapSearchViewModel(
     private val defaultSearchFilter = SearchFilter(listOf(ResourceTypes.VEHICLE,
             ResourceTypes.PARKING, ResourceTypes.CHARGER, ResourceTypes.POI, ResourceTypes.ZONE))
 
-    private val searchFilterRelay: PublishSubject<SearchFilter> = PublishSubject.create()
+    private val searchFilterSubject: PublishSubject<SearchFilter> = PublishSubject.create()
     private var searchFilter: SearchFilter = defaultSearchFilter
 
     override fun setSearchFilter(searchFilter: SearchFilter): Single<SearchFilter> {
         return Single.fromCallable {
             this.searchFilter = searchFilter
-            searchFilterRelay.onNext(searchFilter)
+            searchFilterSubject.onNext(searchFilter)
             return@fromCallable searchFilter
         }
     }
@@ -81,11 +80,15 @@ class MapSearchViewModel(
     }
 
     override fun manualRefresh(): Completable {
-        return Completable.fromAction { searchFilterRelay.onNext(searchFilter) }
+        return Completable.fromAction { searchFilterSubject.onNext(searchFilter) }
     }
 
-    override fun getSearchFilter(): Observable<SearchFilter> {
-        return searchFilterRelay
+    override fun getSearchFilterImmediately(): Single<SearchFilter> {
+        return Single.just(searchFilter)
+    }
+
+    override fun observeSearchFilterChanges(): Observable<SearchFilter> {
+        return searchFilterSubject
     }
 
     override fun fetchVehicleModelsToFilter(): Single<List<FilterItem>> {

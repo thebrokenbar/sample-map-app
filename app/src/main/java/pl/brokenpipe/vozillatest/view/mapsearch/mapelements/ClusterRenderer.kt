@@ -5,7 +5,6 @@ import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.ShapeDrawable
 import android.graphics.drawable.shapes.OvalShape
-import android.os.Build
 import android.support.v4.graphics.drawable.DrawableCompat
 import android.util.SparseArray
 import com.google.android.gms.maps.GoogleMap
@@ -15,7 +14,7 @@ import com.google.maps.android.clustering.Cluster
 import com.google.maps.android.clustering.ClusterManager
 import com.google.maps.android.clustering.view.DefaultClusterRenderer
 import com.google.maps.android.ui.IconGenerator
-import pl.brokenpipe.vozillatest.view.extension.intColor
+import pl.brokenpipe.vozillatest.view.intColor
 import pl.brokenpipe.vozillatest.view.mapsearch.model.Marker
 import java.lang.ref.WeakReference
 

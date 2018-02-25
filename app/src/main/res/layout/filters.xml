@@ -1,41 +1,49 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:orientation="vertical"
-              android:padding="16dp">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp">
+
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
-        android:text="Wybierz obiekty, które cchesz zobaczyć na mapie." />
+        android:text="@string/filterLabel" />
 
     <CheckBox
         android:id="@+id/filterVehicleCheckbox"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="4dp"
-        android:text="Pojazdy" />
+        android:text="@string/filterVehicles" />
+
     <LinearLayout
         android:id="@+id/filterVehicleSubFilters"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="32dp"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:paddingBottom="4dp"
+        android:paddingTop="4dp">
+
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Model"
-            android:textSize="10sp" />
+            android:text="@string/filterVehiclesModel"
+            android:textSize="12sp" />
+
         <Spinner
             android:id="@+id/filterVehicleModelSpinner"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="4dp" />
+
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Status"
-            android:textSize="10sp" />
+            android:text="@string/filterVehiclesStatus"
+            android:textSize="12sp" />
+
         <Spinner
             android:id="@+id/filterVehicleStatusSpinner"
             android:layout_width="match_parent"
@@ -47,24 +55,26 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="4dp"
-        android:text="Parkingi" />
+        android:text="@string/filterParkings" />
+
     <CheckBox
         android:id="@+id/filterChargerCheckbox"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="4dp"
-        android:text="Ładowarki" />
+        android:text="@string/filterCharges" />
+
     <CheckBox
         android:id="@+id/filterPoiCheckbox"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="4dp"
-        android:text="POI" />
+        android:text="@string/filterPois" />
 
     <CheckBox
         android:id="@+id/filterZoneCheckbox"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="4dp"
-        android:text="Strefy" />
+        android:text="@string/filterZones" />
 </LinearLayout>

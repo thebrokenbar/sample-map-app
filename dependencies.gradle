@@ -13,7 +13,8 @@ ext {
     rxFirebaseDatabaseVer = '11.8.0.0'
     googleMapsUtilsVer = "0.5"
     daggerVer = '2.14.1'
-    rxRelayVer = '2.0.0'
+    constraintLayoutVer = '1.0.2'
+    glideVer = '4.6.1'
 
     //tests
     jUnitVer = '4.12'
@@ -25,7 +26,9 @@ ext {
 
     kaptDependencies = [
             "android.arch.lifecycle:compiler:$architectureComponentsVer",
-            "com.google.dagger:dagger-compiler:$daggerVer"
+            "com.google.dagger:dagger-compiler:$daggerVer",
+            "com.android.databinding:compiler:$gradleVer",
+            "com.github.bumptech.glide:compiler:$glideVer"
     ]
 
     implementationDependencies = [
@@ -34,6 +37,7 @@ ext {
             "com.android.support:design:$supportLibVer",
             "android.arch.lifecycle:extensions:$architectureComponentsVer",
             "androidx.core:core-ktx:$androidKtxVer",
+            "com.android.support.constraint:constraint-layout:$constraintLayoutVer",
             //google maps
             "com.google.android.gms:play-services-maps:$googleApiVer",
             "com.google.maps.android:android-maps-utils:$googleMapsUtilsVer",
@@ -49,7 +53,8 @@ ext {
             "io.reactivex.rxjava2:rxjava:$rxJavaVer",
             "io.reactivex.rxjava2:rxandroid:$rxAndroidVer",
             "io.reactivex.rxjava2:rxkotlin:$rxKotlinVer",
-            "com.jakewharton.rxrelay2:rxrelay:$rxRelayVer"
+            //glide
+            "com.github.bumptech.glide:glide:$glideVer"
     ]
 
     testImplementationDependencies = [

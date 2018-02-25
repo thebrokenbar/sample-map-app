@@ -1,7 +1,6 @@
 package pl.brokenpipe.vozillatest.view.filters
 
 import android.app.Dialog
-import android.content.Context
 import android.content.DialogInterface
 import android.os.Bundle
 import android.support.v4.app.DialogFragment
@@ -10,8 +9,6 @@ import android.view.View
 import android.widget.Toast
 import io.reactivex.Single
 import io.reactivex.rxkotlin.subscribeBy
-import io.reactivex.subjects.MaybeSubject
-import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.filters.view.*
 import pl.brokenpipe.vozillatest.R
 import pl.brokenpipe.vozillatest.arch.mapsearch.MapSearchPresenter
@@ -57,8 +54,7 @@ class FiltersDialog : DialogFragment() {
                 .create()
     }
 
-    private fun loadFilters() = presenter.getSearchFilter()
-            .firstOrError()
+    private fun loadFilters() = presenter.getSearchFilterImmediately()
             .doOnSuccess { setFilters(it) }
 
     private fun attachAdapters(): Single<SubFilterAdapter> {

@@ -101,7 +101,7 @@ class RefreshMapObjects(
 
     private fun buildVehicleCache(vehicles: List<Vehicle>) {
         vehicles.forEach { vehicle ->
-            val pictureUrl = "${BuildConfig.HOST}\\${vehicle.picture.id}"
+            val pictureUrl = makePictureUrl(vehicle.picture.id.toString())
             val vehicleModel = VehicleModel(
                     vehicle.id.toString(),
                     vehicle.rangeKm, vehicle.name, vehicle.platesNumber,
@@ -114,6 +114,9 @@ class RefreshMapObjects(
             vehicleCache[vehicleModel.id] = vehicleModel
         }
     }
+
+    private fun makePictureUrl(pictureId: String) =
+            "${BuildConfig.HOST}/attachments/$pictureId"
 
     private fun buildSpecification(mapObjectsFilter: MapObjectsFilter): MapSpecification {
         val objectType = mutableListOf<String>()

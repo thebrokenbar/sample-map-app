@@ -1,4 +1,4 @@
-package pl.brokenpipe.vozillatest.view.extension
+package pl.brokenpipe.vozillatest.view
 
 import android.content.Context
 import android.os.Build

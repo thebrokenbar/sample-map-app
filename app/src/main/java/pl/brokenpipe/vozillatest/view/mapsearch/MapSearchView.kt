@@ -1,12 +1,12 @@
 package pl.brokenpipe.vozillatest.view.mapsearch
 
+import android.os.Bundle
 import android.view.View
 import android.widget.Toast
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.LatLngBounds
 import io.reactivex.Completable
-import io.reactivex.Observable
 import io.reactivex.Observer
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
@@ -22,8 +22,10 @@ import pl.brokenpipe.vozillatest.view.filters.FiltersDialog
 import pl.brokenpipe.vozillatest.view.mapsearch.mapelements.ClusterOrchestrator
 import pl.brokenpipe.vozillatest.view.mapsearch.mapelements.ZoneOrchestrator
 import pl.brokenpipe.vozillatest.view.mapsearch.model.Marker
+import pl.brokenpipe.vozillatest.view.mapsearch.model.MarkerInfo
 import pl.brokenpipe.vozillatest.view.mapsearch.model.MarkersGroup
 import pl.brokenpipe.vozillatest.view.mapsearch.model.Zone
+import pl.brokenpipe.vozillatest.view.vehicleinfo.VehicleInfoBottomsheet
 import timber.log.Timber
 import java.lang.ref.WeakReference
 import javax.inject.Inject
@@ -53,7 +55,6 @@ class MapSearchView(mapsActivity: MapsActivity,
 
     private lateinit var googleMap: GoogleMap
 
-    private var filtersDialogResultDisposable: Disposable? = null
 
     private val loadingObserver = object : Observer<Unit> {
         override fun onComplete() {
@@ -96,9 +97,16 @@ class MapSearchView(mapsActivity: MapsActivity,
                 .inject(this)
 
         this.googleMap.setOnCameraIdleListener(clusterOrchestrator)
+        clusterOrchestrator.onItemClick = { onMarkerClicked(it) }
 
         observeFilterChanges()
         manualRefresh()
+    }
+
+    private fun onMarkerClicked(markerInfo: MarkerInfo?) {
+        when(markerInfo) {
+            is MarkerInfo.VehicleInfo -> showVehicleInfoDialog(markerInfo)
+        }
     }
 
     private fun addAllMarkers(markersGroupMap: Map<MarkersGroup, List<Marker>>) {
@@ -111,7 +119,7 @@ class MapSearchView(mapsActivity: MapsActivity,
     }
 
     private fun observeFilterChanges() {
-        return presenter.getSearchFilter()
+        return presenter.observeSearchFilterChanges()
                 .doOnNext { startLoadingState() }
                 .flatMapSingle {
                     presenter.getMarkersGroup()
@@ -171,12 +179,19 @@ class MapSearchView(mapsActivity: MapsActivity,
     }
 
     private fun showFiltersDialog() {
-        if (filtersDialogResultDisposable?.isDisposed == false) {
-            filtersDialogResultDisposable?.dispose()
-        }
-
         Completable.fromAction { FiltersDialog().show(activity.supportFragmentManager, TAG) }
                 .subscribeBy(onError = { loadingObserver.onError(it) })
+    }
+
+    private fun showVehicleInfoDialog(vehicleInfo: MarkerInfo.VehicleInfo?) {
+        vehicleInfo?.let {
+            VehicleInfoBottomsheet().apply {
+                arguments = Bundle()
+                arguments?.putParcelable(VehicleInfoBottomsheet.VEHICLE_INFO_ARG, it)
+                show(this@MapSearchView.activity.supportFragmentManager, TAG)
+            }
+        }
+
     }
 
     private fun clearAll() {

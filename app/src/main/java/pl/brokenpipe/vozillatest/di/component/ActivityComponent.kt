@@ -7,6 +7,7 @@ import pl.brokenpipe.vozillatest.di.module.MapsActivityModule
 import pl.brokenpipe.vozillatest.di.module.PresenterModule
 import pl.brokenpipe.vozillatest.di.scope.ActivityScope
 import pl.brokenpipe.vozillatest.view.filters.FiltersDialog
+import pl.brokenpipe.vozillatest.view.vehicleinfo.VehicleInfoBottomsheet
 
 /**
  * Created by gwierzchanowski on 20.02.2018.
@@ -16,5 +17,6 @@ import pl.brokenpipe.vozillatest.view.filters.FiltersDialog
 interface ActivityComponent {
     fun inject(mapsActivity: MapsActivity)
     fun inject(filtersDialog: FiltersDialog)
+    fun inject(vehicleInfoBottomsheet: VehicleInfoBottomsheet)
     fun plus(mapViewModule: MapViewModule): MapViewComponent
 }

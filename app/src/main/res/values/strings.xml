@@ -4,4 +4,16 @@
     <string name="filter">Filtruj</string>
     <string name="cancel">Anuluj</string>
     <string name="anyFilter">Wszystkie</string>
+    <string name="filterLabel">Wybierz obiekty, które chcesz zobaczyć na mapie.</string>
+    <string name="filterVehicles">Pojazdy</string>
+    <string name="filterVehiclesModel">Model</string>
+    <string name="filterVehiclesStatus">Status</string>
+    <string name="filterParkings">Parkingi</string>
+    <string name="filterCharges">Ładowarki</string>
+    <string name="filterPois">POI</string>
+    <string name="filterZones">Strefy</string>
+    <string name="vehicleInfoBrand">Marka</string>
+    <string name="vehicleInfoRange">Zasięg</string>
+    <string name="vehicleInfoPlates">Nr rejestracyjny</string>
+    <string name="vehicleInfoReservation">Rezerwacja do:</string>
 </resources>

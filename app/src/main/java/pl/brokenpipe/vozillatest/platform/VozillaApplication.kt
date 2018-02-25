@@ -1,9 +1,11 @@
 package pl.brokenpipe.vozillatest.platform
 
 import android.app.Application
+import pl.brokenpipe.vozillatest.BR
 import pl.brokenpipe.vozillatest.di.component.AppComponent
 import pl.brokenpipe.vozillatest.di.component.DaggerAppComponent
 import pl.brokenpipe.vozillatest.di.module.AppModule
+import pl.brokenpipe.vozillatest.view.databinding.BindingResourceMapper
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -26,6 +28,7 @@ class VozillaApplication : Application() {
 
         appComponent.inject(this)
 
+        BindingResourceMapper.bindableResourceClass = BR::class
         Timber.plant(timberTree)
     }
 }
