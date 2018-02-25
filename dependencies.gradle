@@ -16,9 +16,8 @@ ext {
 
     //tests
     jUnitVer = '4.12'
-    espressoVer = '3.0.1'
     testRunnerVer = '1.0.1'
-    mockitoVer = '2.8.9'
+    mockitoVer = '2.15.0'
     kotlinMockitoVer = '1.5.0'
 
 
@@ -63,7 +62,6 @@ ext {
     ]
 
     androidTestImplementationDependencies = [
-            "com.android.support.test.espresso:espresso-core:$espressoVer",
             "com.android.support.test:runner:$testRunnerVer"
     ]
 }

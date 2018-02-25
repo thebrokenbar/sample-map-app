@@ -25,7 +25,6 @@ class VozillaApplication : Application() {
 
     override fun onCreate() {
         super.onCreate()
-        Fabric.with(this, Crashlytics())
 
         appComponent = DaggerAppComponent.builder()
                 .appModule(AppModule())
