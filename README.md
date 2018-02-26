@@ -18,7 +18,7 @@ There was no need for any persistence in this assignment so I decided to use onl
 View is observing to any changes in filter object in presenter, so when used change filter it will automatically reload markers on map.
 Any error will be cached by observer and handled by showing toast to user (without any distinction for internet connection or cache problems - it's intentional).
 
-Presenter is implemented as Android Architecture Component - ViewModel, so he could survive configuration changes.
+Presenter is implemented as Android Architecture Component - ViewModel, so it could survive configuration changes.
 
 Object groups are downloaded and created as ClusterManagers with distinct models, 
 but with no data about model in Vehicle entity I was not able to create any but one cluster for every vehicle. 
@@ -38,7 +38,7 @@ Application is not covered in Unit Test in 100%. Only presenter is tested due to
 View-related classes are filtered in code coverage because of small bug detection efficiency with testing by Unit Tests.
 View should be tested by Espresso Test but it's require too much time for this assignment.
 
-Firebase Crashlytics was used for crash reporting. Crash simulation button i visible in top-left corner.
+Firebase Crashlytics was used for crash reporting. Crash simulation button i visible on top-left corner.
 
 ### How to do it better with more time?
 To achieve more 'clean' architecture whole application should be divided into multiple modules with layers and dependencies separation.
